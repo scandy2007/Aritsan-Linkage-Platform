@@ -283,19 +283,25 @@ function generateSculptedCraftGeometry(craftType = 'pot') {
     return generateLatheGeometry(pts, 48);
   }
 
-  // Default: Authentic Terracotta Clay Pot / Matka
+  // Default: Authentic Wide-Body Terracotta Matka Pot with Flared Rim
+  // Profile matches the reference: squat disc-like base, wide shoulder, and large outward-flared opening
   const potPts = [
-    { r: 0.25, y: -0.85 },
-    { r: 0.55, y: -0.65 },
-    { r: 0.82, y: -0.25 },
-    { r: 0.88, y: 0.05 },
-    { r: 0.72, y: 0.4 },
-    { r: 0.42, y: 0.65 },
-    { r: 0.38, y: 0.75 },
-    { r: 0.48, y: 0.85 },
-    { r: 0.08, y: 0.85 },
+    { r: 0.10, y: -0.88 },   // tiny flat base center
+    { r: 0.52, y: -0.86 },   // base edge (wide flat bottom)
+    { r: 0.72, y: -0.80 },   // lower body start flaring out
+    { r: 0.92, y: -0.55 },   // wide belly begins
+    { r: 1.00, y: -0.20 },   // maximum belly width (shoulder)
+    { r: 0.96, y: 0.10 },    // start of body tapering toward neck
+    { r: 0.72, y: 0.35 },    // neck narrowing
+    { r: 0.48, y: 0.48 },    // min neck (throat)
+    { r: 0.62, y: 0.60 },    // rim flares back outward
+    { r: 0.88, y: 0.72 },    // rim maximum flare
+    { r: 0.92, y: 0.78 },    // rim outer edge (outermost)
+    { r: 0.86, y: 0.82 },    // rim lip curls slightly inward
+    { r: 0.50, y: 0.84 },    // inner rim
+    { r: 0.06, y: 0.84 },    // opening hole center
   ];
-  return generateLatheGeometry(potPts, 54);
+  return generateLatheGeometry(potPts, 64);
 }
 
 /**

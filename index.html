@@ -990,7 +990,7 @@ function Ic({ n, s = 20, c = 'currentColor', fill = 'none', sw = 1.8 }) {
 /* --- Craft artwork: every product image is drawn, not fetched --- */
 const PAL = {
   bag:      ['#F3EBDC','#C79A4E','#8E6A2E','#4E3A18'],
-  pot:      ['#F6E8DE','#C4713F','#9A4F27','#5E2E16'],
+  pot:      ['#E8C8A0','#C9956C','#2C1A0A','#8B5E3C'],  // clay-beige body, dark geometric pattern lines
   vase:     ['#EAF0F6','#3B6FA8','#2A4F7C','#12314F'],
   stole:    ['#FBEAE6','#C0392B','#8E2A20','#D8A24A'],
   elephant: ['#F4EDE2','#8B5E34','#6A4423','#3E2714'],
@@ -1173,15 +1173,42 @@ function buildCraftMesh(kind) {
   const group = new THREE.Group();
   const mat = (i, rough = 0.55) => new THREE.MeshStandardMaterial({ color:c[i], roughness:rough, metalness:kind === 'lamp' || kind === 'horse' ? 0.55 : 0.05 });
 
-  if (kind === 'pot' || kind === 'vase') {
-    const pts = [];
-    for (let i = 0; i <= 12; i++) {
-      const t = i / 12, y = t * 2.4 - 1.2;
-      const r = 0.15 + 0.55 * Math.sin(t * Math.PI) * (kind === 'vase' ? 0.8 + 0.4 * t : 1);
-      pts.push(new THREE.Vector2(Math.max(r, 0.05), y));
-    }
-    const geo = new THREE.LatheGeometry(pts, 48);
-    group.add(new THREE.Mesh(geo, mat(1, 0.5)));
+  if (kind === 'vase') {
+    // Tall elegant vase - flared neck, bulging body
+    const vPts = [
+      new THREE.Vector2(0.14, -1.1),
+      new THREE.Vector2(0.28, -0.9),
+      new THREE.Vector2(0.50, -0.55),
+      new THREE.Vector2(0.65, -0.15),
+      new THREE.Vector2(0.60, 0.25),
+      new THREE.Vector2(0.38, 0.55),
+      new THREE.Vector2(0.28, 0.72),
+      new THREE.Vector2(0.36, 0.85),
+      new THREE.Vector2(0.06, 0.85),
+    ];
+    const geo = new THREE.LatheGeometry(vPts, 56);
+    group.add(new THREE.Mesh(geo, mat(1, 0.45)));
+  } else if (kind === 'pot') {
+    // WIDE SQUAT TRADITIONAL TERRACOTTA POT
+    // Reference shape: flat wide base, maximum belly width at shoulder, concave neck, large outward-flared rim
+    const potPts = [
+      new THREE.Vector2(0.08, -0.88),   // center base
+      new THREE.Vector2(0.52, -0.86),   // wide flat base edge
+      new THREE.Vector2(0.72, -0.78),   // lower body curve outward
+      new THREE.Vector2(0.92, -0.52),   // belly widening
+      new THREE.Vector2(1.02, -0.18),   // maximum width (shoulder)
+      new THREE.Vector2(0.98, 0.12),    // starting to taper to neck
+      new THREE.Vector2(0.74, 0.38),    // neck narrowing
+      new THREE.Vector2(0.50, 0.50),    // throat (narrowest point of neck)
+      new THREE.Vector2(0.64, 0.62),    // rim flare begins outward
+      new THREE.Vector2(0.90, 0.74),    // rim flared wide
+      new THREE.Vector2(0.94, 0.80),    // rim outer lip
+      new THREE.Vector2(0.88, 0.84),    // rim turns in slightly
+      new THREE.Vector2(0.52, 0.86),    // inner rim
+      new THREE.Vector2(0.06, 0.86),    // opening
+    ];
+    const geo = new THREE.LatheGeometry(potPts, 64);
+    group.add(new THREE.Mesh(geo, mat(1, 0.60)));
   } else if (kind === 'basket' || kind === 'coaster') {
     const geo = new THREE.CylinderGeometry(1, 0.85, kind === 'coaster' ? 0.18 : 0.9, 24, 1, true);
     const m = new THREE.Mesh(geo, mat(1, 0.9)); group.add(m);
@@ -1252,8 +1279,8 @@ function Viewer3D({ art, status, modelUrl, stage }) {
     try {
       scene = new THREE.Scene();
     } catch (e) { setNoWebgl(true); return; }
-    const camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
-    let radius = 4.6, theta = 0.6, phi = 1.15;
+    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+    let radius = 4.2, theta = 0.5, phi = 0.95; // 3/4 top view — reveals rim + wide body
     const setCam = () => {
       camera.position.set(radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.cos(theta));
       camera.lookAt(0, 0, 0);
@@ -1267,9 +1294,10 @@ function Viewer3D({ art, status, modelUrl, stage }) {
     renderer.setSize(w, h);
     el.innerHTML = ''; el.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x3a2f1f, 1.0));
-    const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(3, 5, 4); scene.add(key);
-    const rim = new THREE.DirectionalLight(0xE07B2C, 0.4); rim.position.set(-4, 2, -3); scene.add(rim);
+    scene.add(new THREE.HemisphereLight(0xFFF5E8, 0x2a1a0a, 0.85)); // warm sky / warm ground
+    const key = new THREE.DirectionalLight(0xFFEDD0, 1.2); key.position.set(3, 5, 4); scene.add(key); // warm key light
+    const fill = new THREE.DirectionalLight(0xFFF0E0, 0.55); fill.position.set(-3, 2, 2); scene.add(fill); // soft fill
+    const rim = new THREE.DirectionalLight(0xC4661C, 0.45); rim.position.set(-2, -1, -4); scene.add(rim); // deep amber rim
 
     let mesh = null;
     const fitAndAdd = obj => {
@@ -1319,7 +1347,7 @@ function Viewer3D({ art, status, modelUrl, stage }) {
 
     stateRef.current = { spin:true, zoomIn:() => { radius = Math.max(2.4, radius - 0.6); setCam(); },
       zoomOut:() => { radius = Math.min(9, radius + 0.6); setCam(); },
-      reset:() => { radius = 4.6; theta = 0.6; phi = 1.15; setCam(); stateRef.current.spin = true; } };
+      reset:() => { radius = 4.2; theta = 0.5; phi = 0.95; setCam(); stateRef.current.spin = true; } };
 
     return () => {
       cancelAnimationFrame(raf);
