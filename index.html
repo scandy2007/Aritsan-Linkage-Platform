@@ -1189,26 +1189,163 @@ function buildCraftMesh(kind) {
     const geo = new THREE.LatheGeometry(vPts, 56);
     group.add(new THREE.Mesh(geo, mat(1, 0.45)));
   } else if (kind === 'pot') {
-    // WIDE SQUAT TRADITIONAL TERRACOTTA POT
-    // Reference shape: flat wide base, maximum belly width at shoulder, concave neck, large outward-flared rim
-    const potPts = [
-      new THREE.Vector2(0.08, -0.88),   // center base
-      new THREE.Vector2(0.52, -0.86),   // wide flat base edge
-      new THREE.Vector2(0.72, -0.78),   // lower body curve outward
-      new THREE.Vector2(0.92, -0.52),   // belly widening
-      new THREE.Vector2(1.02, -0.18),   // maximum width (shoulder)
-      new THREE.Vector2(0.98, 0.12),    // starting to taper to neck
-      new THREE.Vector2(0.74, 0.38),    // neck narrowing
-      new THREE.Vector2(0.50, 0.50),    // throat (narrowest point of neck)
-      new THREE.Vector2(0.64, 0.62),    // rim flare begins outward
-      new THREE.Vector2(0.90, 0.74),    // rim flared wide
-      new THREE.Vector2(0.94, 0.80),    // rim outer lip
-      new THREE.Vector2(0.88, 0.84),    // rim turns in slightly
-      new THREE.Vector2(0.52, 0.86),    // inner rim
-      new THREE.Vector2(0.06, 0.86),    // opening
+    // ─── TERRACOTTA MATKA — full realistic pot with hollow interior + carved geometric patterns ───
+    // Materials
+    const clayColor = 0xC4956A;         // warm terracotta
+    const clayDark  = 0xA0704A;         // inside darker clay
+    const patternCol= 0x1E0E04;         // near-black carved motif lines (like the reference)
+    const rimCol    = 0xD4A878;         // slightly lighter flared rim
+
+    const clayMat  = new THREE.MeshStandardMaterial({ color:clayColor, roughness:0.72, metalness:0.02 });
+    const innerMat = new THREE.MeshStandardMaterial({ color:clayDark,  roughness:0.82, metalness:0.01, side:THREE.BackSide });
+    const patMat   = new THREE.MeshStandardMaterial({ color:patternCol,roughness:0.88, metalness:0.0  });
+    const rimMat   = new THREE.MeshStandardMaterial({ color:rimCol,    roughness:0.65, metalness:0.03 });
+
+    // ── OUTER SHELL (82 lathe segments = very smooth) ──
+    const outerPts = [
+      new THREE.Vector2(0.07, -0.88),
+      new THREE.Vector2(0.30, -0.87),
+      new THREE.Vector2(0.52, -0.84),
+      new THREE.Vector2(0.68, -0.76),
+      new THREE.Vector2(0.82, -0.62),
+      new THREE.Vector2(0.93, -0.42),
+      new THREE.Vector2(1.00, -0.18),
+      new THREE.Vector2(1.02, 0.00),
+      new THREE.Vector2(0.99, 0.14),
+      new THREE.Vector2(0.90, 0.28),
+      new THREE.Vector2(0.78, 0.38),
+      new THREE.Vector2(0.62, 0.46),
+      new THREE.Vector2(0.50, 0.50),   // throat
+      new THREE.Vector2(0.56, 0.57),
+      new THREE.Vector2(0.68, 0.63),
+      new THREE.Vector2(0.82, 0.70),
+      new THREE.Vector2(0.92, 0.76),   // rim shelf
+      new THREE.Vector2(0.95, 0.80),
+      new THREE.Vector2(0.93, 0.84),
+      new THREE.Vector2(0.86, 0.87),
+      new THREE.Vector2(0.54, 0.88),   // inner rim surface
+      new THREE.Vector2(0.06, 0.88),   // opening center
     ];
-    const geo = new THREE.LatheGeometry(potPts, 64);
-    group.add(new THREE.Mesh(geo, mat(1, 0.60)));
+    group.add(new THREE.Mesh(new THREE.LatheGeometry(outerPts, 80), clayMat));
+
+    // ── INNER SHELL (visible when looking from above into the pot) ──
+    const innerPts = [
+      new THREE.Vector2(0.05, 0.87),
+      new THREE.Vector2(0.50, 0.87),
+      new THREE.Vector2(0.58, 0.83),
+      new THREE.Vector2(0.50, 0.74),   // inner neck flare underside
+      new THREE.Vector2(0.42, 0.62),
+      new THREE.Vector2(0.36, 0.52),
+      new THREE.Vector2(0.42, 0.40),
+      new THREE.Vector2(0.60, 0.28),
+      new THREE.Vector2(0.78, 0.10),
+      new THREE.Vector2(0.88, -0.10),
+      new THREE.Vector2(0.86, -0.36),
+      new THREE.Vector2(0.75, -0.58),
+      new THREE.Vector2(0.52, -0.76),
+      new THREE.Vector2(0.28, -0.84),
+      new THREE.Vector2(0.06, -0.86),
+    ];
+    group.add(new THREE.Mesh(new THREE.LatheGeometry(innerPts, 72), innerMat));
+
+    // ── FLAT BOTTOM CAP ──
+    const botGeo = new THREE.CircleGeometry(0.07, 32);
+    const bot    = new THREE.Mesh(botGeo, new THREE.MeshStandardMaterial({ color:0x8B5A3A, roughness:0.95 }));
+    bot.rotation.x = -Math.PI / 2; bot.position.y = -0.875; group.add(bot);
+
+    // ── RIM TORUS (rounded lip, slightly lighter color) ──
+    const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.90, 0.032, 14, 80), rimMat);
+    rimTorus.position.y = 0.78; group.add(rimTorus);
+
+    // ── CARVED BANDS (four raised dark rings at key body positions) ──
+    const bands = [
+      { r:0.500, y:0.500, t:0.022 },  // throat band
+      { r:0.740, y:0.380, t:0.020 },  // upper-neck band
+      { r:1.005, y:-0.005, t:0.024 }, // shoulder / max-width band
+      { r:0.940, y:-0.430, t:0.020 }, // lower-body band
+      { r:0.680, y:-0.760, t:0.018 }, // near-base band
+    ];
+    bands.forEach(({ r, y, t }) => {
+      const b = new THREE.Mesh(new THREE.TorusGeometry(r, t, 10, 80), patMat);
+      b.position.y = y; group.add(b);
+    });
+
+    // ── GEOMETRIC TRIANGLE CHEVRONS around the wide body ──
+    // (mimics the angular tribal pattern on the reference pot)
+    const N = 14;
+    for (let i = 0; i < N; i++) {
+      const ang = (i / N) * Math.PI * 2;
+      const sin = Math.sin(ang), cos = Math.cos(ang);
+
+      // UP-pointing solid triangle (cone)
+      const upR = 0.97;
+      const up = new THREE.Mesh(
+        new THREE.ConeGeometry(0.055, 0.16, 4, 1),
+        patMat
+      );
+      up.position.set(sin * upR, -0.25, cos * upR);
+      up.rotation.y = -ang + Math.PI / 4; // rotate cone square-face forward
+      group.add(up);
+
+      // DOWN-pointing inverted triangle between each up
+      const downAng = ang + (Math.PI / N);
+      const ds = Math.sin(downAng), dc = Math.cos(downAng);
+      const downR = 0.92;
+      const down = new THREE.Mesh(
+        new THREE.ConeGeometry(0.045, 0.13, 4, 1),
+        patMat
+      );
+      down.position.set(ds * downR, -0.50, dc * downR);
+      down.rotation.y  = -downAng + Math.PI / 4;
+      down.rotation.z  = Math.PI; // flip to point downward
+      group.add(down);
+    }
+
+    // ── SCROLL / WAVE ARC MOTIFS at shoulder band ──
+    // (mimics the curling-wave scroll lines on the reference pot)
+    const NS = 10;
+    for (let i = 0; i < NS; i++) {
+      const ang = (i / NS) * Math.PI * 2;
+      const sin = Math.sin(ang), cos = Math.cos(ang);
+      const scrollR = 0.98;
+
+      // Inner arc stroke
+      const arc = new THREE.Mesh(
+        new THREE.TorusGeometry(0.052, 0.014, 6, 18, Math.PI * 1.35),
+        patMat
+      );
+      arc.position.set(sin * scrollR, 0.09, cos * scrollR);
+      arc.rotation.y = -ang;
+      group.add(arc);
+
+      // Small dot accent next to each scroll
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), patMat);
+      dot.position.set(sin * (scrollR - 0.02), 0.18, cos * (scrollR - 0.02));
+      group.add(dot);
+    }
+
+    // ── INNER RIM CARVED GROOVE (visible when looking in from top) ──
+    const innerRimGroove = new THREE.Mesh(
+      new THREE.TorusGeometry(0.50, 0.016, 8, 64),
+      patMat
+    );
+    innerRimGroove.position.y = 0.80; group.add(innerRimGroove);
+
+    // ── HATCHED LINES on lower body band ──
+    const NH = 18;
+    for (let i = 0; i < NH; i++) {
+      const ang = (i / NH) * Math.PI * 2;
+      const sin = Math.sin(ang), cos = Math.cos(ang);
+      const ht = 0.88;
+      const stroke = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.010, 0.010, 0.14, 5),
+        patMat
+      );
+      stroke.position.set(sin * ht, -0.72, cos * ht);
+      stroke.rotation.y = -ang;
+      stroke.rotation.z = Math.PI * 0.18; // slight diagonal
+      group.add(stroke);
+    }
   } else if (kind === 'basket' || kind === 'coaster') {
     const geo = new THREE.CylinderGeometry(1, 0.85, kind === 'coaster' ? 0.18 : 0.9, 24, 1, true);
     const m = new THREE.Mesh(geo, mat(1, 0.9)); group.add(m);
