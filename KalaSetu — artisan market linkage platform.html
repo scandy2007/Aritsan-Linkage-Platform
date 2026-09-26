@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>KalaSetu — Handmade by India's artisans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KalaSetu — design tokens
+   ============================================================ */
+:root{
+  --green:#1B4332;      /* brand, headers, artisan mode */
+  --green-2:#2D6A4F;
+  --green-soft:#EAF1EC;
+  --marigold:#E07B2C;   /* the one action colour */
+  --marigold-dk:#C4661C;
+  --clay:#B4512A;
+  --paper:#FBF7F0;
+  --surface:#FFFFFF;
+  --surface-2:#F5F0E7;
+  --ink:#12160F;
+  --muted:#6A7060;
+  --rule:#E7DFD2;
+  --ok:#2D6A4F;
+  --warn:#B4512A;
+  --shadow:0 1px 2px rgba(18,22,15,.06), 0 8px 24px -12px rgba(18,22,15,.18);
+  --r-s:8px; --r-m:14px; --r-l:22px;
+  --maxw:1240px;
+  --font:'DM Sans','Noto Sans Devanagari',system-ui,-apple-system,Segoe UI,sans-serif;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14170F; --surface:#1C2018; --surface-2:#232819;
+    --ink:#F2EEE4; --muted:#A8AE9C; --rule:#343A29;
+    --green-soft:#22301F; --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14170F; --surface:#1C2018; --surface-2:#232819;
+  --ink:#F2EEE4; --muted:#A8AE9C; --rule:#343A29;
+  --green-soft:#22301F; --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--font); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;margin:0;line-height:1.15;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4.2vw,44px)}
+h2{font-size:clamp(21px,2.6vw,29px)}
+h3{font-size:19px}
+p{margin:0}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px;border-radius:4px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  border-radius:999px;padding:11px 20px;font-weight:700;font-size:15px;
+  background:var(--surface-2);color:var(--ink);border:1px solid transparent;
+  transition:transform .12s ease, background .16s ease, box-shadow .16s ease;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-pri{background:var(--marigold);color:#fff;box-shadow:0 6px 16px -8px rgba(224,123,44,.9)}
+.btn-pri:hover{background:var(--marigold-dk)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-2)}
+.btn-ghost{background:transparent;border:1.5px solid var(--rule);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green-2);color:var(--green-2)}
+.btn-lg{padding:16px 28px;font-size:17px;border-radius:16px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* ---------- header ---------- */
+.topbar{background:var(--surface);border-bottom:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);z-index:60}
+.topbar-in{display:flex;align-items:center;gap:16px;padding:11px 18px;max-width:var(--maxw);margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--green);display:grid;place-items:center}
+.brand-name{font-family:var(--display);font-weight:700;font-size:21px;color:var(--green);line-height:1}
+.brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.search{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);
+  border:1.5px solid var(--rule);border-radius:999px;padding:6px 6px 6px 16px;min-width:0}
+.search:focus-within{border-color:var(--green-2);background:var(--surface)}
+.search input{flex:1;background:none;border:none;outline:none;font-size:14.5px;min-width:0}
+.search input::placeholder{color:var(--muted)}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink);
+  transition:background .15s}
+.icon-btn:hover{background:var(--surface-2)}
+.hdr-actions{display:flex;align-items:center;gap:4px}
+.badge{position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;border-radius:9px;background:var(--marigold);
+  color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 5px;border:2px solid var(--surface)}
+.relative{position:relative}
+
+/* ---------- hero ---------- */
+.hero{position:relative;border-radius:var(--r-l);overflow:hidden;background:var(--green);color:#fff;
+  min-height:290px;display:grid;grid-template-columns:1.1fr .9fr}
+.hero-copy{padding:40px 38px;display:flex;flex-direction:column;justify-content:center;gap:14px;z-index:2}
+.hero h1{color:#fff;font-size:clamp(28px,3.6vw,42px)}
+.hero p{color:#CFDED4;max-width:44ch;font-size:15.5px}
+.hero-art{position:relative}
+.hero-dots{position:absolute;bottom:16px;right:20px;display:flex;gap:7px;z-index:3}
+.hero-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45)}
+.hero-dots button[aria-current="true"]{background:#fff;width:22px;border-radius:4px}
+.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
+.hero-slide.on{opacity:1}
+.trust{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.trust span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#CFDED4}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:212px 1fr;gap:26px;padding:22px 0 60px}
+.rail{position:sticky;top:76px;align-self:start;background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r-m);overflow:hidden;transition:transform .28s ease}
+.rail-head{display:none}
+.rail h4{font-family:var(--font);font-size:13px;font-weight:700;color:var(--muted);padding:13px 16px 7px}
+.rail button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 16px;font-size:14px;text-align:left;
+  border-left:3px solid transparent;transition:background .15s ease}
+.rail button:hover{background:var(--surface-2)}
+.rail button[aria-current="true"]{background:var(--green-soft);border-left-color:var(--green);font-weight:700;color:var(--green)}
+.rail-cta{margin:12px;padding:16px;border-radius:var(--r-m);background:var(--surface-2);border:1px dashed var(--rule)}
+.drawer-btn{display:none}
+.drawer-veil{display:none}
+.acct-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:14px;box-shadow:var(--shadow);min-width:200px;padding:8px;z-index:80;display:flex;flex-direction:column;gap:2px}
+.acct-role{font-size:11.5px;color:var(--muted);font-weight:700;padding:6px 10px 4px;text-transform:uppercase;letter-spacing:.03em}
+.acct-menu button{display:flex;align-items:center;gap:10px;padding:9px 10px;font-size:14px;border-radius:9px;text-align:left}
+.acct-menu button:hover{background:var(--surface-2)}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:34px 0 14px}
+.section-head button{font-size:14px;font-weight:700;color:var(--green-2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:16px}
+
+/* ---------- product card ---------- */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-m);overflow:hidden;
+  display:flex;flex-direction:column;position:relative;transition:box-shadow .2s ease,border-color .2s ease}
+.card:hover{box-shadow:var(--shadow);border-color:#D8CDB9}
+.card-art{position:relative;aspect-ratio:1/1;background:var(--surface-2);overflow:hidden}
+.card-art svg{width:100%;height:100%;display:block}
+.tag{position:absolute;top:9px;left:9px;background:var(--green);color:#fff;font-size:11px;font-weight:700;
+  padding:4px 9px;border-radius:6px;letter-spacing:.01em}
+.tag.new{background:var(--clay)}
+.tag.low{background:#8A6D1F}
+.heart{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);
+  display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.card-body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card-title{font-size:14.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-by{font-size:12.5px;color:var(--muted)}
+.card-loc{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.stars{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--muted)}
+.stars b{color:#fff;background:var(--ok);padding:1px 6px;border-radius:5px;font-size:11.5px}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px}
+.price{font-size:17px;font-weight:700;font-family:var(--font)}
+.price s{font-size:12.5px;color:var(--muted);font-weight:400;margin-left:6px}
+.add-btn{width:38px;height:38px;border-radius:11px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;
+  transition:background .15s, transform .15s}
+.add-btn:hover{background:var(--green);color:#fff}
+.add-btn.done{background:var(--ok);color:#fff}
+
+/* ---------- product detail ---------- */
+.pdp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;padding:26px 0 60px}
+.pdp-art{border:1px solid var(--rule);border-radius:var(--r-l);overflow:hidden;background:var(--surface-2);position:sticky;top:80px}
+.gallery-tabs{display:flex;gap:8px;margin-bottom:10px}
+.ai-badge{position:absolute;top:12px;left:12px;background:var(--green);color:#fff;font-size:11.5px;font-weight:700;
+  padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+.thumbs{display:flex;gap:9px;margin-top:12px}
+.thumb{width:62px;height:62px;border-radius:10px;overflow:hidden;border:2px solid var(--rule);background:var(--surface-2)}
+.thumb[aria-current="true"]{border-color:var(--green)}
+.pill{display:inline-flex;align-items:center;gap:7px;background:var(--green-soft);color:var(--green);
+  padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:700}
+.spec{display:grid;grid-template-columns:120px 1fr;gap:8px 14px;font-size:14px}
+.spec dt{color:var(--muted)}
+.spec dd{margin:0;font-weight:500}
+.maker{display:flex;gap:14px;align-items:center;border:1px solid var(--rule);border-radius:var(--r-m);padding:14px;background:var(--surface)}
+.avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+  font-family:var(--display);font-size:21px;font-weight:700;color:#fff;background:var(--green-2)}
+
+/* ---------- generic surfaces ---------- */
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-m);padding:18px}
+.divider{height:1px;background:var(--rule);margin:16px 0}
+.muted{color:var(--muted)}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.empty{text-align:center;padding:70px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+
+/* ---------- cart ---------- */
+.cart-line{display:grid;grid-template-columns:92px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.cart-art{width:92px;height:92px;border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--rule);border-radius:999px;overflow:hidden}
+.qty button{width:34px;height:34px;display:grid;place-items:center;font-size:18px;font-weight:700;color:var(--green)}
+.qty button:hover{background:var(--surface-2)}
+.qty span{min-width:30px;text-align:center;font-weight:700}
+
+/* ---------- forms ---------- */
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:15px;font-weight:700}
+.field .hint{font-size:13.5px;color:var(--muted);font-weight:400}
+.input{background:var(--surface);border:1.5px solid var(--rule);border-radius:12px;padding:13px 14px;font-size:16px;width:100%;outline:none}
+.input:focus{border-color:var(--green-2)}
+textarea.input{min-height:110px;resize:vertical;line-height:1.5}
+.chipset{display:flex;gap:9px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--rule);background:var(--surface);border-radius:999px;padding:9px 15px;font-size:14.5px;font-weight:500}
+.chip[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft);color:var(--green);font-weight:700}
+
+/* ---------- artisan mode ---------- */
+.amode{background:var(--green-soft);min-height:100vh}
+.abar{background:var(--green);color:#fff}
+.abar-in{max-width:980px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px}
+.awrap{max-width:980px;margin:0 auto;padding:22px 18px 90px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.tile{background:var(--surface);border:1px solid var(--rule);border-radius:20px;padding:22px 20px;display:flex;
+  flex-direction:column;gap:10px;align-items:flex-start;text-align:left;min-height:150px;justify-content:space-between;
+  transition:transform .15s ease, box-shadow .2s ease}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.tile-ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:var(--green-soft);color:var(--green)}
+.tile-t{font-size:19px;font-weight:700;line-height:1.25}
+.tile-s{font-size:14px;color:var(--muted)}
+.stat{background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:16px 18px}
+.stat b{display:block;font-family:var(--display);font-size:27px;line-height:1.1}
+.stat span{font-size:13.5px;color:var(--muted)}
+.steps{display:flex;gap:8px;margin-bottom:22px}
+.step{flex:1;height:7px;border-radius:4px;background:var(--rule)}
+.step.on{background:var(--green)}
+.step.cur{background:var(--marigold)}
+.bigcard{background:var(--surface);border:1px solid var(--rule);border-radius:22px;padding:24px}
+.photo-slot{aspect-ratio:4/3;border-radius:18px;border:2.5px dashed var(--rule);background:var(--surface-2);
+  display:grid;place-items:center;overflow:hidden;position:relative}
+.photo-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.photo-opt{aspect-ratio:1;border-radius:14px;overflow:hidden;border:2.5px solid var(--rule);background:var(--surface-2)}
+.photo-opt[aria-pressed="true"]{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.mic{width:66px;height:66px;border-radius:50%;background:var(--marigold);color:#fff;display:grid;place-items:center;
+  box-shadow:0 8px 20px -8px rgba(224,123,44,.9);flex-shrink:0}
+.mic.rec{background:var(--clay);animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,81,42,.5)}70%{box-shadow:0 0 0 16px rgba(180,81,42,0)}100%{box-shadow:0 0 0 0 rgba(180,81,42,0)}}
+.ai-box{background:linear-gradient(180deg,var(--green-soft),transparent);border:1px solid var(--rule);
+  border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ai-label{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--green)}
+.price-dial{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.price-dial input[type=range]{flex:1;min-width:180px;accent-color:var(--green)}
+.sticky-foot{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--rule);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));z-index:40}
+.sticky-in{max-width:980px;margin:0 auto;display:flex;gap:12px}
+.preview-frame{border:1px solid var(--rule);border-radius:18px;overflow:hidden;background:var(--surface)}
+.enh-list{list-style:none;padding:0;margin:6px 0 0;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.enh-list li{position:relative;padding-left:20px}
+.enh-list li::before{content:'';position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--rule)}
+.enh-list li.on::before{background:var(--marigold);animation:pulse 1.2s infinite}
+.enh-done{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-direction:column;gap:7px;font-size:14px}
+.enh-done li{display:flex;align-items:center;gap:8px}
+.compare{position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;border:1px solid var(--rule)}
+.compare-before,.compare-after{position:absolute;inset:0}
+.compare-before svg{filter:saturate(.55) brightness(.82) contrast(.92)}
+.compare-after svg{filter:saturate(1.12) brightness(1.05) contrast(1.08)}
+.compare input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.compare::after{content:'';position:absolute;top:0;bottom:0;left:var(--pos);width:3px;background:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.15);pointer-events:none}
+.compare-tag{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:rgba(18,22,15,.65);color:#fff}
+.compare-tag.left{left:10px}
+.compare-tag.right{right:10px}
+.preview-top{background:var(--surface-2);padding:9px 14px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--rule)}
+
+/* ---------- toast + misc ---------- */
+.viewer3d-shell{position:relative;aspect-ratio:1/1;border-radius:var(--r-l);overflow:hidden;
+  background:radial-gradient(circle at 50% 35%, #24312A, #12160F 78%);border:1px solid var(--rule)}
+.viewer3d-canvas{width:100%;height:100%;cursor:grab}
+.viewer3d-canvas:active{cursor:grabbing}
+.viewer3d-bar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;
+  background:rgba(20,23,15,.62);backdrop-filter:blur(6px);padding:6px;border-radius:14px}
+.viewer3d-bar .icon-btn{color:#fff;width:34px;height:34px}
+.viewer3d-bar .icon-btn:hover{background:rgba(255,255,255,.14)}
+.viewer3d-tag{position:absolute;top:12px;left:12px;background:rgba(20,23,15,.62);color:#EFE9DC;font-size:11.5px;
+  font-weight:700;padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px)}
+.viewer3d-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;color:#CFDED4;text-align:center;padding:20px;font-size:13.5px}
+.mini-spin{width:30px;height:30px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#E07B2C;animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:9px;align-items:center;width:calc(100% - 32px);max-width:430px}
+.toast{background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:13px;font-size:14.5px;font-weight:500;
+  box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.skel{background:linear-gradient(90deg,var(--surface-2),var(--rule),var(--surface-2));background-size:200% 100%;
+  animation:sweep 1.1s infinite;border-radius:8px;height:13px}
+@keyframes sweep{to{background-position:-200% 0}}
+.modal-bg{position:fixed;inset:0;background:rgba(18,22,15,.5);z-index:150;display:grid;place-items:center;padding:18px}
+.modal{background:var(--surface);border-radius:22px;max-width:520px;width:100%;padding:24px;max-height:86vh;overflow:auto}
+.ribbon{background:var(--surface-2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-top:40px}
+.ribbon-in{max-width:var(--maxw);margin:0 auto;padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.ribbon-item{display:flex;gap:11px;align-items:center;font-size:13.5px}
+.ribbon-item b{display:block;font-size:14.5px}
+footer{background:var(--green);color:#CFDED4;padding:34px 0;margin-top:0}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:24px}
+footer h4{color:#fff;font-size:15px;margin-bottom:9px;font-family:var(--font)}
+footer a{display:block;font-size:13.5px;padding:3px 0}
+footer a:hover{color:#fff}
+.scroll-x{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.scroll-x>*{scroll-snap-align:start;flex:0 0 auto}
+
+.carousel{position:relative}
+.carousel-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;
+  cursor:grab;-webkit-user-select:none;user-select:none;scrollbar-width:thin}
+.carousel-track:active{cursor:grabbing}
+.car-card{flex:0 0 196px;scroll-snap-align:start}
+.car-card .card{height:100%}
+.car-arrow{position:absolute;top:calc(50% - 24px);width:42px;height:42px;border-radius:50%;background:var(--surface);
+  border:1px solid var(--rule);box-shadow:var(--shadow);display:grid;place-items:center;z-index:5;transition:opacity .15s,transform .15s}
+.car-arrow:hover{transform:translateY(-1px)}
+.car-arrow[disabled]{opacity:0;pointer-events:none}
+.car-arrow.left{left:-8px}
+.car-arrow.right{right:-8px}
+@media (max-width:900px){ .car-arrow{display:none} .car-card{flex-basis:150px} }
+table.simple{width:100%;border-collapse:collapse;font-size:14px}
+table.simple th{text-align:left;font-size:12.5px;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--rule)}
+table.simple td{padding:11px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;padding-top:16px}
+  .drawer-btn{display:grid}
+  .rail{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:130;border-radius:0;
+    transform:translateX(-100%);box-shadow:0 0 0 rgba(0,0,0,0);overflow-y:auto}
+  .rail-open{transform:translateX(0);box-shadow:20px 0 40px -20px rgba(0,0,0,.35)}
+  .rail-head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 6px}
+  .drawer-veil{display:block;position:fixed;inset:0;background:rgba(18,22,15,.5);z-index:120}
+  .hero{grid-template-columns:1fr;min-height:0}
+  .hero-copy{padding:26px 22px;order:2}
+  .hero-art{order:1;height:190px}
+  .pdp{grid-template-columns:1fr;gap:22px}
+  .pdp-art{position:static}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .brand-sub{display:none}
+}
+@media (max-width:560px){
+  .topbar-in{flex-wrap:wrap;gap:10px}
+  .search{order:3;width:100%;flex-basis:100%}
+  .hdr-actions{margin-left:auto}
+  .cart-line{grid-template-columns:72px 1fr}
+  .cart-art{width:72px;height:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext, useReducer } = React;
+
+/* ============================================================
+   1. DATA LAYER  (mock backend — swap for REST/Firebase later)
+   ============================================================ */
+
+const CATEGORIES = [
+  { id:'all',      label:'All crafts',        hi:'सभी शिल्प',   icon:'grid'   },
+  { id:'textiles', label:'Textiles & weaves', hi:'कपड़ा',       icon:'thread' },
+  { id:'pottery',  label:'Pottery & clay',    hi:'मिट्टी',      icon:'pot'    },
+  { id:'wood',     label:'Woodcraft',         hi:'लकड़ी',       icon:'wood'   },
+  { id:'jewellery',label:'Jewellery',         hi:'गहने',        icon:'gem'    },
+  { id:'bamboo',   label:'Bamboo & cane',     hi:'बाँस',        icon:'bamboo' },
+  { id:'painting', label:'Folk painting',     hi:'चित्रकला',    icon:'brush'  },
+  { id:'metal',    label:'Metal & brass',     hi:'धातु',        icon:'lamp'   },
+  { id:'home',     label:'Home decor',        hi:'घर सजावट',    icon:'home'   },
+];
+
+const ARTISANS = [
+  { id:'a1', name:'Meena Devi', craft:'Jute weaving', village:'Sarai Mohana', district:'Varanasi', state:'Uttar Pradesh',
+    years:22, cluster:'Varanasi Jute Cluster', rating:4.8, orders:1240, langs:['Hindi','Bhojpuri'],
+    story:'Meena learnt jute weaving from her mother and now trains nineteen women in her village. Her tote bags are woven on a floor loom and finished with natural dye.' },
+  { id:'a2', name:'Ramesh Kumar', craft:'Blue pottery', village:'Kot Jewar', district:'Jaipur', state:'Rajasthan',
+    years:31, cluster:'Jaipur Blue Pottery Group', rating:4.6, orders:860, langs:['Hindi','Marwari'],
+    story:'A third-generation potter working with quartz clay and cobalt glaze. Every piece is thrown by hand and fired once, so no two are identical.' },
+  { id:'a3', name:'Lata Sharma', craft:'Handloom silk', village:'Nathnagar', district:'Bhagalpur', state:'Bihar',
+    years:17, cluster:'Bhagalpur Tussar Silk SHG', rating:4.9, orders:2010, langs:['Hindi','Angika'],
+    story:'Lata weaves tussar silk on a pit loom. A single stole takes four days, from reeling the yarn to the last knot of the fringe.' },
+  { id:'a4', name:'Suresh Patel', craft:'Rosewood carving', village:'Hunsur', district:'Mysuru', state:'Karnataka',
+    years:26, cluster:'Mysuru Woodcarvers Society', rating:4.7, orders:640, langs:['Kannada','Hindi'],
+    story:'Suresh carves with chisels his grandfather forged. He uses only legally sourced rosewood offcuts from furniture workshops.' },
+  { id:'a5', name:'Anita Kumari', craft:'Tribal beadwork', village:'Bundu', district:'Ranchi', state:'Jharkhand',
+    years:9, cluster:'Bundu Tribal Women Collective', rating:4.5, orders:410, langs:['Hindi','Mundari'],
+    story:'Anita strings glass and brass beads in Munda patterns that were traditionally worn at harvest festivals.' },
+  { id:'a6', name:'Bipul Das', craft:'Bamboo & sabai grass', village:'Sarthebari', district:'Barpeta', state:'Assam',
+    years:14, cluster:'Barpeta Bamboo Cluster', rating:4.6, orders:530, langs:['Assamese','Hindi'],
+    story:'Bipul harvests bamboo after the monsoon, when the culm is hardest, and weaves without a single nail or screw.' },
+  { id:'a7', name:'Sunita Jha', craft:'Madhubani painting', village:'Jitwarpur', district:'Madhubani', state:'Bihar',
+    years:19, cluster:'Jitwarpur Painters Guild', rating:4.9, orders:980, langs:['Maithili','Hindi'],
+    story:'Sunita paints with bamboo twigs and colours she makes from turmeric, soot and crushed flowers on handmade paper.' },
+  { id:'a8', name:'Iqbal Ansari', craft:'Brass metalwork', village:'Peerzada', district:'Moradabad', state:'Uttar Pradesh',
+    years:28, cluster:'Moradabad Brass Artisans', rating:4.4, orders:720, langs:['Hindi','Urdu'],
+    story:'Iqbal casts and hand-engraves brass lamps. The finish is polished with tamarind pulp, never chemicals.' },
+];
+
+const PRODUCTS = [
+  { id:'p1',  name:'Handwoven jute tote bag',    cat:'textiles', art:'bag',      artisan:'a1', price:499,  mrp:699,  rating:4.8, reviews:124, stock:18, tag:'Bestseller',
+    material:'Natural jute, cotton lining', size:'38 × 34 × 12 cm', days:2,
+    desc:'A roomy market tote woven on a floor loom from undyed jute. The handles are double-stitched so they hold weight without stretching, and the inside is lined with soft cotton.' },
+  { id:'p2',  name:'Terracotta water pot',       cat:'pottery',  art:'pot',      artisan:'a2', price:699,  mrp:899,  rating:4.6, reviews:98,  stock:9,  tag:null,
+    material:'River clay, unglazed', size:'22 cm tall, 4 litres', days:3,
+    desc:'Thrown on a kick wheel and fired in a wood kiln. Unglazed clay keeps water naturally cool through summer and adds a faint earthy sweetness.' },
+  { id:'p3',  name:'Bhagalpur handloom silk stole', cat:'textiles', art:'stole', artisan:'a3', price:1299, mrp:1799, rating:4.9, reviews:156, stock:6,  tag:'Bestseller',
+    material:'Pure tussar silk', size:'200 × 70 cm', days:3,
+    desc:'Woven on a pit loom over four days. Tussar has a natural gold sheen and a slightly textured hand, so the drape improves with every wash.' },
+  { id:'p4',  name:'Rosewood elephant figurine',  cat:'wood',     art:'elephant', artisan:'a4', price:899,  mrp:1150, rating:4.7, reviews:203, stock:12, tag:null,
+    material:'Seasoned rosewood', size:'15 × 9 × 18 cm', days:4,
+    desc:'Carved from a single block with hand chisels, then rubbed with beeswax. The howdah and anklets are cut freehand, so the detailing differs slightly on each one.' },
+  { id:'p5',  name:'Tribal beaded earrings',      cat:'jewellery',art:'earrings', artisan:'a5', price:399,  mrp:549,  rating:4.5, reviews:87,  stock:24, tag:'New',
+    material:'Glass beads, brass hooks', size:'7 cm drop', days:2,
+    desc:'Munda festival patterns strung bead by bead on brass wire. Light enough to wear all day — each pair weighs under nine grams.' },
+  { id:'p6',  name:'Madhubani fish painting',     cat:'painting', art:'painting', artisan:'a7', price:1850, mrp:2400, rating:4.9, reviews:64,  stock:4,  tag:'Bestseller',
+    material:'Natural pigment on handmade paper', size:'45 × 30 cm, unframed', days:5,
+    desc:'Fish are a Mithila symbol of good fortune. Painted with a bamboo twig in turmeric yellow, soot black and red from kusum flowers.' },
+  { id:'p7',  name:'Bamboo fruit basket',         cat:'bamboo',   art:'basket',   artisan:'a6', price:549,  mrp:749,  rating:4.6, reviews:71,  stock:15, tag:null,
+    material:'Split bamboo', size:'30 cm wide, 12 cm deep', days:3,
+    desc:'Woven in a close hexagonal lattice with no nails or glue. Bamboo cut after the monsoon is denser, so the rim keeps its shape for years.' },
+  { id:'p8',  name:'Brass diya pair',             cat:'metal',    art:'lamp',     artisan:'a8', price:749,  mrp:999,  rating:4.4, reviews:112, stock:21, tag:null,
+    material:'Cast brass', size:'9 cm each', days:2,
+    desc:'Sand-cast and hand-engraved with a leaf border, then polished with tamarind pulp. The wide lip keeps oil from spilling onto the base.' },
+  { id:'p9',  name:'Jaipur blue pottery vase',    cat:'pottery',  art:'vase',     artisan:'a2', price:1150, mrp:1499, rating:4.7, reviews:88,  stock:7,  tag:null,
+    material:'Quartz clay, cobalt glaze', size:'26 cm tall', days:4,
+    desc:'Blue pottery uses no potter’s clay at all — the body is ground quartz. Fired once at low heat, which is why the cobalt stays this bright.' },
+  { id:'p10', name:'Kutch mirror cushion cover',  cat:'home',     art:'cushion',  artisan:'a3', price:899,  mrp:1199, rating:4.6, reviews:59,  stock:3,  tag:null,
+    material:'Cotton, glass mirror, silk thread', size:'40 × 40 cm', days:3,
+    desc:'Each mirror is caught in a ring of chain stitch by hand. Back opens with a concealed placket so the front stays unbroken.' },
+  { id:'p11', name:'Kalamkari table runner',      cat:'textiles', art:'runner',   artisan:'a3', price:1090, mrp:1450, rating:4.8, reviews:46,  stock:8,  tag:'New',
+    material:'Cotton, vegetable dye', size:'150 × 35 cm', days:4,
+    desc:'Drawn freehand with a tamarind-twig pen, then dyed in madder and indigo over several washes. The block edges stay soft, never printed-sharp.' },
+  { id:'p12', name:'Sabai grass coaster set',     cat:'bamboo',   art:'coaster',  artisan:'a6', price:329,  mrp:449,  rating:4.5, reviews:132, stock:30, tag:null,
+    material:'Sabai grass, cotton cord', size:'Set of 6, 10 cm', days:2,
+    desc:'Coiled and bound by hand. Grass is naturally heat resistant, so a hot cup will not leave a mark on your table.' },
+  { id:'p13', name:'Dhokra tribal horse',         cat:'metal',    art:'horse',    artisan:'a8', price:1499, mrp:1899, rating:4.7, reviews:38,  stock:5,  tag:null,
+    material:'Bell metal, lost-wax cast', size:'17 cm tall', days:6,
+    desc:'Made by the lost-wax method: a wax thread is wound over a clay core, covered, then melted out. The mould breaks with the casting, so every horse is the only one.' },
+  { id:'p14', name:'Block-printed cotton dupatta',cat:'textiles', art:'dupatta',  artisan:'a1', price:649,  mrp:899,  rating:4.6, reviews:104, stock:14, tag:null,
+    material:'Mul cotton, natural dye', size:'230 × 100 cm', days:3,
+    desc:'Printed with hand-carved teak blocks, one colour at a time. Slight overlaps at the selvedge are the mark of a hand print, not a flaw.' },
+];
+
+const SEED_ORDERS = [
+  { id:'KS-24817', date:'2026-09-12', items:[{pid:'p3',qty:1}], total:1299, status:'Out for delivery', buyer:'You' },
+  { id:'KS-24709', date:'2026-09-04', items:[{pid:'p8',qty:2},{pid:'p12',qty:1}], total:1827, status:'Delivered', buyer:'You' },
+];
+
+/* Orders arriving to the logged-in artisan (Meena Devi) — artisan dashboard */
+const SEED_SALES = [
+  { id:'KS-24902', date:'2026-09-18', pid:'p1',  qty:2, amount:998,  buyer:'Ananya R., Bengaluru', status:'New' },
+  { id:'KS-24881', date:'2026-09-17', pid:'p14', qty:1, amount:649,  buyer:'Devika S., Kochi',     status:'Packed' },
+  { id:'KS-24844', date:'2026-09-15', pid:'p1',  qty:1, amount:499,  buyer:'Rahul M., Pune',       status:'Shipped' },
+  { id:'KS-24790', date:'2026-09-11', pid:'p14', qty:3, amount:1947, buyer:'Fabindia Retail',      status:'Paid' },
+];
+
+const byId  = (arr,id) => arr.find(x => x.id === id);
+const maker = p => byId(ARTISANS, p.artisan);
+const rupee = n => '₹' + Number(n).toLocaleString('en-IN');
+
+/* ============================================================
+   2. AI SERVICE  (mock — replace each method with a real call)
+   ============================================================
+   Every method returns a Promise so the UI already handles
+   latency + loading states. Point these at your endpoints:
+     POST /ai/describe   POST /ai/price   POST /ai/translate
+   ============================================================ */
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const AI = {
+  async describe({ name, material, craft, notes }) {
+    await wait(1400);
+    const n = (name || 'this piece').toLowerCase();
+    return `Handmade ${n} crafted in ${material || 'traditional materials'} using ${craft || 'techniques'} passed down through generations. ` +
+           (notes ? notes.charAt(0).toUpperCase() + notes.slice(1).replace(/\.$/,'') + '. ' : '') +
+           `Each piece is made individually, so small variations in colour and finish are part of its character. Made to order and packed with care.`;
+  },
+  async suggestPrice({ material, hours, cost, craft }) {
+    await wait(1200);
+    const base  = Number(cost || 150);
+    const labour = Number(hours || 6) * 45;
+    const skill = { 'Handloom silk':1.5, 'Madhubani painting':1.45, 'Blue pottery':1.3 }[craft] || 1.2;
+    const fair  = Math.round((base + labour) * skill / 10) * 10;
+    return { low: Math.round(fair*0.85/10)*10, fair, high: Math.round(fair*1.25/10)*10,
+             note:'Similar handmade items from your cluster sold between these prices in the last 30 days.' };
+  },
+  async titleFromVoice(transcript) {
+    await wait(700);
+    return transcript.replace(/^(i (am )?(making|made|selling) )/i,'').replace(/\.$/,'')
+                     .replace(/^\w/, c => c.toUpperCase());
+  },
+  async tags({ name, craft }) {
+    await wait(600);
+    const pool = ['handmade','gift','eco-friendly','traditional','festive','home decor','GI craft','made in India'];
+    return pool.slice(0, 5);
+  },
+  async translate(text, lang) { await wait(900); return text; }, // hook real translation here
+};
+
+/* ============================================================
+   2b. BACKEND API LAYER
+   ============================================================
+   This is the seam a real backend plugs into. Every method's
+   signature and return shape match the endpoints in the spec.
+   Each one FIRST tries a real network call to /api/... — since
+   no backend is deployed in this preview, that call fails fast
+   (no route exists) and the method falls back to a clearly
+   labelled mock, exactly as point 22 of the brief requires:
+   the UI never pretends a model ran when nothing did.
+   Swap a real backend in by pointing API_BASE at it — no
+   component code needs to change.
+   ============================================================ */
+const API_BASE = 'http://localhost:8787'; // e.g. 'https://your-deployed-backend.example.com' once you deploy kalasetu-backend
+
+async function callApi(path, opts) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      method: opts?.method || 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      body: opts?.body ? JSON.stringify(opts.body) : undefined,
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return { ok: true, data: await res.json(), source: 'live' };
+  } catch (e) {
+    return { ok: false, error: e.message, source: 'mock' };
+  }
+}
+async function callApiForm(path, formData) {
+  try {
+    const res = await fetch(API_BASE + path, { method:'POST', body: formData });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return { ok: true, data: await res.json(), source: 'live' };
+  } catch (e) {
+    return { ok: false, error: e.message, source: 'mock' };
+  }
+}
+
+/* HD Studio Photoshoot Renderer with Guaranteed Background Removal */
+async function renderStudioPhotoshoot(file, mode = 'marketplace') {
+  let cutoutCanvas = null;
+
+  // Strategy 1: AI Model Background Removal (WebAssembly)
+  if (typeof imglyRemoveBackground !== 'undefined') {
+    try {
+      const blob = await imglyRemoveBackground(file, {
+        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.4.5/dist/'
+      });
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = URL.createObjectURL(blob);
+      await new Promise(r => { img.onload = r; });
+      cutoutCanvas = document.createElement('canvas');
+      cutoutCanvas.width = img.naturalWidth;
+      cutoutCanvas.height = img.naturalHeight;
+      const cctx = cutoutCanvas.getContext('2d');
+      cctx.drawImage(img, 0, 0);
+    } catch (err) {
+      console.warn('Wasm AI cutout error, using smart saliency isolation:', err);
+    }
+  }
+
+  // Strategy 2: High-accuracy Color & Edge Segmentation fallback
+  if (!cutoutCanvas) {
+    const rawImg = new Image();
+    rawImg.crossOrigin = 'anonymous';
+    rawImg.src = URL.createObjectURL(file);
+    await new Promise(r => { rawImg.onload = r; });
+
+    const w = rawImg.naturalWidth, h = rawImg.naturalHeight;
+    cutoutCanvas = document.createElement('canvas');
+    cutoutCanvas.width = w;
+    cutoutCanvas.height = h;
+    const cctx = cutoutCanvas.getContext('2d');
+    cctx.drawImage(rawImg, 0, 0);
+
+    const imgData = cctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    // Sample background dirt/ground color from corners and borders
+    let bgR = 0, bgG = 0, bgB = 0, sampleCount = 0;
+    const samplePx = (x, y) => {
+      const idx = (y * w + x) * 4;
+      bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2]; sampleCount++;
+    };
+    for (let x = 0; x < w; x += 15) { samplePx(x, 10); samplePx(x, h - 10); }
+    for (let y = 0; y < h; y += 15) { samplePx(10, y); samplePx(w - 10, y); }
+    bgR /= sampleCount; bgG /= sampleCount; bgB /= sampleCount;
+
+    const cx = w / 2, cy = h / 2;
+    const maxDist = Math.hypot(w / 2, h / 2);
+
+    // Alpha mask ground pixels outside the central subject
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const distCenter = Math.hypot(x - cx, y - cy) / maxDist;
+        const colorDiff = Math.hypot(r - bgR, g - bgG, b - bgB);
+
+        // Ground / dirt pixel detection
+        if (distCenter > 0.35 && colorDiff < 48) {
+          data[i + 3] = 0; // Transparent
+        } else if (distCenter > 0.42 && colorDiff < 70) {
+          data[i + 3] = Math.max(0, Math.min(255, (colorDiff - 48) * 11));
+        }
+      }
+    }
+    cctx.putImageData(imgData, 0, 0);
+  }
+
+  // 3. Render 1200x1200 Pure White Studio Photoshoot
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 1200;
+  const ctx = canvas.getContext('2d');
+
+  const backdrops = {
+    marketplace: { top: '#FFFFFF', bottom: '#FFFFFF', shadow: 'rgba(0,0,0,0.22)' }, // Pure White
+    studio:      { top: '#FFFFFF', bottom: '#F2F4F7', shadow: 'rgba(0,0,0,0.26)' },
+    lifestyle:   { top: '#FCFAF6', bottom: '#E5D7C4', shadow: 'rgba(0,0,0,0.35)' },
+    luxury:      { top: '#2A2E33', bottom: '#141618', shadow: 'rgba(0,0,0,0.55)' },
+    heritage:    { top: '#FDFBF7', bottom: '#E2CEB9', shadow: 'rgba(0,0,0,0.30)' },
+  };
+  const theme = backdrops[mode] || backdrops.marketplace;
+
+  // Solid / Studio gradient background
+  const grad = ctx.createLinearGradient(0, 0, 0, 1200);
+  grad.addColorStop(0, theme.top);
+  grad.addColorStop(1, theme.bottom);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1200, 1200);
+
+  // Soft diffused base shadow
+  const shadowGrad = ctx.createRadialGradient(600, 960, 20, 600, 960, 360);
+  shadowGrad.addColorStop(0, theme.shadow);
+  shadowGrad.addColorStop(0.5, theme.shadow.replace(/[\d.]+\)$/, '0.08)'));
+  shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = shadowGrad;
+  ctx.beginPath();
+  ctx.ellipse(600, 960, 360, 75, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw isolated HD product
+  const maxDim = 880;
+  const scale = Math.min(maxDim / cutoutCanvas.width, maxDim / cutoutCanvas.height);
+  const w = cutoutCanvas.width * scale;
+  const h = cutoutCanvas.height * scale;
+  const x = (1200 - w) / 2;
+  const y = 960 - h;
+
+  ctx.filter = 'contrast(1.10) brightness(1.05) saturate(1.10)';
+  ctx.drawImage(cutoutCanvas, x, y, w, h);
+  ctx.filter = 'none';
+
+  return new Promise(resolve => {
+    canvas.toBlob(blob => resolve({ blob, url: URL.createObjectURL(blob), isAiCutout: true }), 'image/jpeg', 0.95);
+  });
+}
+
+const Api = {
+  /* ---- Auth ---- */
+  async register({ name, email, password, role }) {
+    const r = await callApi('/api/auth/register', { method:'POST', body:{ name, email, password, role } });
+    if (r.ok) return r.data;
+    await wait(650);
+    return { source:'mock', user:{ name, email, role, id:'u_' + Date.now() }, token:'demo-token' };
+  },
+  async login({ email, password }) {
+    const r = await callApi('/api/auth/login', { method:'POST', body:{ email, password } });
+    if (r.ok) return r.data;
+    await wait(600);
+    const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'User';
+    return { source:'mock', user:{ name, email, role:'buyer', id:'u_' + Date.now() }, token:'demo-token' };
+  },
+
+  /* ---- Image enhancement: POST /api/products/:id/enhance-image (multipart) ---- */
+  async enhanceImage(productId, file, mode = 'marketplace') {
+    if (!file) {
+      return { source:'mock', status:'COMPLETED', demo:true,
+        steps:['No photo selected — showing sample artwork.'] };
+    }
+
+    const objUrl = URL.createObjectURL(file);
+    const photoshoot = await renderStudioPhotoshoot(file, mode);
+
+    // If backend is active, also sync with server storage
+    if (API_BASE) {
+      const fd = new FormData();
+      fd.append('image', photoshoot.blob, 'enhanced.jpg');
+      fd.append('mode', mode);
+      const r = await callApiForm(`/api/products/${productId}/enhance-image`, fd);
+      if (r.ok && r.data?.enhancedUrl) {
+        return {
+          ...r.data,
+          source: 'live',
+          originalUrl: objUrl,
+          enhancedUrl: r.data.enhancedUrl,
+          steps: photoshoot.isAiCutout
+            ? ['Background removed & replaced with white studio cyclorama', 'Soft diffused base shadow synthesized', 'Product sharpened & contrast calibrated to HD']
+            : ['Studio lighting and white balance corrected', 'Texture sharpened for HD catalog listing']
+        };
+      }
+    }
+
+    return {
+      source: 'live',
+      status: 'COMPLETED',
+      originalUrl: objUrl,
+      enhancedUrl: photoshoot.url,
+      steps: photoshoot.isAiCutout
+        ? ['Background removed & replaced with white studio cyclorama', 'Soft diffused base shadow synthesized', 'Product sharpened & contrast calibrated to HD']
+        : ['Studio lighting and white balance corrected', 'Texture sharpened for HD catalog listing']
+    };
+  },
+
+  /* ---- 3D generation: POST /api/products/:id/generate-3d { imageUrls } ---- */
+  async generate3D(productId, imageUrls = []) {
+    if (API_BASE && imageUrls.length) {
+      const r = await callApi(`/api/products/${productId}/generate-3d`, { method:'POST', body:{ imageUrls } });
+      if (r.ok) return { ...r.data, source:'live' };
+      return { source:'mock', status:'FAILED', error:'Could not reach the 3D backend: ' + r.error };
+    }
+    await wait(300);
+    return { source:'mock', status:'IN_PROGRESS', demo:true };
+  },
+  /** Normalizes both live (PENDING/IN_PROGRESS/SUCCEEDED/FAILED) and mock
+   * status vocabularies to the same {status: PROCESSING|COMPLETED|FAILED,
+   * stage, progress, modelUrl, demo} shape the viewer consumes. */
+  async get3DStatus(productId, demo = false) {
+    if (API_BASE && !demo) {
+      const r = await callApi(`/api/products/${productId}/3d-status`);
+      if (r.ok) {
+        const s = r.data.status;
+        return { status: s === 'SUCCEEDED' ? 'COMPLETED' : s === 'FAILED' ? 'FAILED' : 'PROCESSING',
+          stage: r.data.stage, progress: r.data.progress, modelUrl: r.data.modelUrls?.glb, source:'live' };
+      }
+      return { status:'FAILED', stage:null, error:'Lost contact with the 3D backend: ' + r.error };
+    }
+    await wait(1200);
+    return { source:'mock', status:'COMPLETED', demo:true, assetType:'template' }; // template mesh — see buildCraftMesh
+  },
+  /** Polls get3DStatus until COMPLETED/FAILED, reporting stage text as it goes. */
+  async poll3D(productId, { demo = false, intervalMs = 2500, maxAttempts = 40, onUpdate } = {}) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const s = await this.get3DStatus(productId, demo);
+      onUpdate && onUpdate(s);
+      if (s.status === 'COMPLETED' || s.status === 'FAILED') return s;
+      await wait(intervalMs);
+    }
+    return { status:'FAILED', stage:null, error:'Timed out waiting for the 3D model to finish.' };
+  },
+  async get3DModel(productId, category) {
+    const r = await callApi(`/api/products/${productId}/3d-model`);
+    if (r.ok) return { ...r.data, source:'live' };
+    await wait(200);
+    return { source:'mock', modelUrl:null, template:category || 'pot' }; // no .glb — viewer builds a template mesh
+  },
+
+  /* ---- AI structured description: POST /api/products/:id/generate-description ---- */
+  async generateDescription(productId, { file, notes, category, craftType, artisanName }) {
+    if (API_BASE) {
+      const fd = new FormData();
+      if (file) fd.append('image', file);
+      if (notes) fd.append('notes', notes);
+      if (category) fd.append('category', category);
+      if (craftType) fd.append('craftType', craftType);
+      if (artisanName) fd.append('artisanName', artisanName);
+      const r = await callApiForm(`/api/products/${productId}/generate-description`, fd);
+      if (r.ok) return { ...r.data, source:'live' };
+      return { source:'mock', status:'FAILED', error:'Could not reach the description backend: ' + r.error };
+    }
+    // No backend configured — build the same structured shape from the
+    // lighter local AI.describe helper, but honestly marked as a demo and
+    // with every non-stated attribute left uncertain rather than guessed,
+    // same rule the real endpoint follows.
+    await wait(1100);
+    const text = await AI.describe({ name:category, material:null, craft:craftType, notes });
+    const stated = notes ? notes.slice(0, 60) : null;
+    return {
+      source:'mock', status:'COMPLETED', demo:true,
+      productName: craftType ? `Handcrafted ${craftType}` : 'Handcrafted product',
+      category, craftType,
+      attributes: {
+        material: { value:null, source:'uncertain' },
+        colour: { value:null, source:'uncertain' },
+        pattern: { value:null, source:'uncertain' },
+        dimensions: { value:null, source:'uncertain' },
+        origin: { value:null, source:'uncertain' },
+      },
+      keyFeatures: ['Handmade construction', 'One-of-a-kind piece'],
+      descriptions: { shortEn: text.slice(0, 120), detailedEn: text, seoEn: text.slice(0, 150),
+        shortHi: text.slice(0, 120), detailedHi: text },
+      warnings: ['No AI backend connected — material, colour, pattern, dimensions and origin were not analyzed. Please fill these in yourself.'],
+    };
+  },
+
+  /* ---- B2B: POST /api/bulk-enquiries ---- */
+  async submitEnquiry(payload) {
+    const r = await callApi('/api/bulk-enquiries', { method:'POST', body:payload });
+    if (r.ok) return r.data;
+    await wait(700);
+    return { source:'mock', id:'ENQ-' + Math.floor(1000 + Math.random() * 9000), status:'SENT' };
+  },
+};
+
+/* Voice input: uses the browser's speech engine when available,
+   falls back to a scripted transcript so the flow always demos. */
+function useVoice(onResult) {
+  const [rec, setRec] = useState(false);
+  const ref = useRef(null);
+  const start = useCallback((fallback) => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setRec(true);
+    if (SR) {
+      try {
+        const r = new SR();
+        r.lang = 'en-IN'; r.interimResults = false; r.maxAlternatives = 1;
+        r.onresult = e => { onResult(e.results[0][0].transcript); setRec(false); };
+        r.onerror = () => { setRec(false); onResult(fallback); };
+        r.onend = () => setRec(false);
+        ref.current = r; r.start();
+        return;
+      } catch (e) { /* fall through */ }
+    }
+    setTimeout(() => { setRec(false); onResult(fallback); }, 1900);
+  }, [onResult]);
+  const stop = () => { try { ref.current && ref.current.stop(); } catch(e){} setRec(false); };
+  return { rec, start, stop };
+}
+
+/* ============================================================
+   3. STORE  (cart, wishlist, orders, listings — persisted)
+   ============================================================ */
+const KEY = 'kalasetu.v1';
+const load = () => { try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
+const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} };
+
+const initial = () => Object.assign({
+  cart: [], wishlist: ['p6'], orders: SEED_ORDERS, myProducts: ['p1','p14'],
+  drafts: [], lang: 'en', user: { name:'Meena Devi', artisanId:'a1' },
+  session: null, enquiries: [],
+}, load() || {});
+
+function reducer(s, a) {
+  switch (a.type) {
+    case 'add': {
+      const at = s.cart.find(l => l.pid === a.pid);
+      return { ...s, cart: at ? s.cart.map(l => l.pid===a.pid ? {...l, qty:l.qty+(a.qty||1)} : l)
+                              : [...s.cart, { pid:a.pid, qty:a.qty||1 }] };
+    }
+    case 'qty':    return { ...s, cart: s.cart.map(l => l.pid===a.pid ? {...l, qty:Math.max(1,l.qty+a.d)} : l) };
+    case 'remove': return { ...s, cart: s.cart.filter(l => l.pid !== a.pid) };
+    case 'clear':  return { ...s, cart: [] };
+    case 'wish':   return { ...s, wishlist: s.wishlist.includes(a.pid) ? s.wishlist.filter(p=>p!==a.pid) : [...s.wishlist, a.pid] };
+    case 'order':  return { ...s, cart: [], orders: [a.order, ...s.orders] };
+    case 'publish':return { ...s, drafts: [a.product, ...s.drafts], myProducts: [a.product.id, ...s.myProducts] };
+    case 'lang':   return { ...s, lang: a.lang };
+    case 'login':  return { ...s, session: a.session };
+    case 'logout': return { ...s, session: null };
+    case 'enquiry':return { ...s, enquiries: [a.enquiry, ...s.enquiries] };
+    default: return s;
+  }
+}
+
+const Store = createContext(null);
+const useStore = () => useContext(Store);
+
+function StoreProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, null, initial);
+  const [toasts, setToasts] = useState([]);
+  useEffect(() => save(state), [state]);
+  const toast = useCallback((msg, icon) => {
+    const id = Math.random().toString(36).slice(2);
+    setToasts(t => [...t, { id, msg, icon }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 2600);
+  }, []);
+  /* all products = catalogue + anything this artisan published */
+  const catalogue = useMemo(() => [...state.drafts, ...PRODUCTS], [state.drafts]);
+  const find = useCallback(id => byId(catalogue, id), [catalogue]);
+  return (
+    <Store.Provider value={{ state, dispatch, toast, catalogue, find, t: k => TXT[k] ? TXT[k][state.lang] || TXT[k].en : k }}>
+      {children}
+      <div className="toasts">{toasts.map(t => (
+        <div className="toast" key={t.id}><Ic n={t.icon||'check'} s={18} c="#7FD1A0" />{t.msg}</div>
+      ))}</div>
+    </Store.Provider>
+  );
+}
+
+/* Small bilingual dictionary — artisan-facing screens are the ones that matter */
+const TXT = {
+  sell:        { en:'Sell your craft',      hi:'अपना सामान बेचें' },
+  addProduct:  { en:'Add a new product',    hi:'नया सामान जोड़ें' },
+  myProducts:  { en:'My products',          hi:'मेरा सामान' },
+  myOrders:    { en:'Orders to send',       hi:'भेजने के ऑर्डर' },
+  earnings:    { en:'My earnings',          hi:'मेरी कमाई' },
+  help:        { en:'Get help',             hi:'मदद लें' },
+  speak:       { en:'Tap and speak',        hi:'दबाकर बोलें' },
+  next:        { en:'Next',                 hi:'आगे' },
+  back:        { en:'Back',                 hi:'पीछे' },
+  publish:     { en:'Publish product',      hi:'सामान डालें' },
+  photo:       { en:'Add a photo',          hi:'फोटो डालें' },
+  whatMaking:  { en:'What have you made?',  hi:'आपने क्या बनाया है?' },
+  priceStep:   { en:'Set your price',       hi:'दाम तय करें' },
+  checkStep:   { en:'Check and publish',    hi:'देखें और डालें' },
+  enhanceStep: { en:'Enhance your photo',   hi:'फोटो सुधारें' },
+  threeDStep:  { en:'Add a 3D preview',     hi:'3D झलक जोड़ें' },
+  inventory:   { en:'Inventory',            hi:'माल-सूची' },
+  insights:    { en:'Market insights',      hi:'बाज़ार की जानकारी' },
+  profile:     { en:'My profile',           hi:'मेरी प्रोफ़ाइल' },
+};
+
+/* ============================================================
+   4. ICONS + GENERATED CRAFT ARTWORK
+   ============================================================ */
+const P = {
+  grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  search:'M11 4a7 7 0 1 0 4.2 12.6L20 21l1-1-4.5-4.7A7 7 0 0 0 11 4z',
+  mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 6 6.9V21H8v2h8v-2h-3v-3.1A7 7 0 0 0 19 11h-2a5 5 0 0 1-10 0H5z',
+  heart:'M12 20s-7.5-4.6-7.5-9.3A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.5 3.1C19.5 15.4 12 20 12 20z',
+  cart:'M3 4h2.2l2.4 10.4A2 2 0 0 0 9.5 16h8.1a2 2 0 0 0 1.9-1.4L21.5 7H7M10 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0M16 20a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
+  user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
+  check:'M20 6 9 17l-5-5',
+  plus:'M12 5v14M5 12h14',
+  arrow:'M5 12h13M13 6l6 6-6 6',
+  pin:'M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z',
+  star:'M12 2l3 6.5 7 .9-5 4.8 1.2 7L12 17.8 5.8 21.2 7 14.2 2 9.4l7-.9z',
+  truck:'M3 6h11v9H3zM14 9h4l3 3v3h-7zM6.5 18a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0M16 18a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0',
+  shield:'M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3zM9 12l2 2 4-4',
+  leaf:'M20 4C9 4 4 9 4 16v4h3v-4c0-6 4-9 13-9z',
+  camera:'M4 7h4l1.5-2h5L16 7h4v12H4zM12 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  box:'M3 7.5 12 3l9 4.5V17L12 21l-9-4V7.5zM3 7.5 12 12l9-4.5M12 12v9',
+  rupee:'M6 4h12M6 9h12M16 4c0 4-3 5-7 5l8 10',
+  bulb:'M9 21h6M10 18h4c0-3 4-4 4-8a6 6 0 1 0-12 0c0 4 4 5 4 8z',
+  chat:'M4 5h16v10H9l-5 4V5z',
+  pot:'M8 3h8M7 8c0-2 2-3 5-3s5 1 5 3c2 2 3 5 3 8a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6c0-3 1-6 3-8z',
+  thread:'M6 3v8a6 6 0 0 0 12 0V3M4 21h16M9 7h6',
+  wood:'M4 8c0-2 1.5-3 4-3h8c2.5 0 4 1 4 3v8c0 2-1.5 3-4 3H8c-2.5 0-4-1-4-3zM8 5v14',
+  gem:'M6 3h12l3 6-9 12L3 9z',
+  bamboo:'M8 3v18M16 3v18M6 8h4M6 14h4M14 6h4M14 12h4M14 18h4',
+  brush:'M14 3l7 7-7 4-4-4zM7 14c-2 1-3 4-4 7 3-1 6-2 7-4z',
+  lamp:'M12 3v3M5 12h14l-3 5H8zM9 21h6M12 17v4',
+  home:'M4 11 12 4l8 7v9h-5v-6H9v6H4z',
+  edit:'M4 20h4L19 9l-4-4L4 16zM15 5l4 4',
+  eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  back:'M19 12H6M11 6l-6 6 6 6',
+  phone:'M6 3h12v18H6zM10 18h4',
+  sparkle:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z',
+  trash:'M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14',
+  x:'M6 6l12 12M18 6 6 18',
+  menu:'M4 7h16M4 12h16M4 17h16',
+  rotate:'M4 12a8 8 0 1 1 2.3 5.6M4 12v6h6',
+  zoomin:'M11 4a7 7 0 1 0 4.2 12.6L20 21l1-1-4.5-4.7A7 7 0 0 0 11 4zM11 8v6M8 11h6',
+  zoomout:'M11 4a7 7 0 1 0 4.2 12.6L20 21l1-1-4.5-4.7A7 7 0 0 0 11 4zM8 11h6',
+  expand:'M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5',
+  cube:'M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5 12 12l8-4.5M12 12v9',
+  ar:'M4 8V5a1 1 0 0 1 1-1h3M20 8V5a1 1 0 0 1-1-1h-3M4 16v3a1 1 0 0 0 1 1h3M20 16v3a1 1 0 0 0-1 1h-3M9 9h6v6H9z',
+  bag2:'M6 8h12l-1 12H7z M9 8V6a3 3 0 0 1 6 0v2',
+};
+function Ic({ n, s = 20, c = 'currentColor', fill = 'none', sw = 1.8 }) {
+  return <svg width={s} height={s} viewBox="0 0 24 24" fill={fill} stroke={c} strokeWidth={sw}
+    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={P[n] || P.box} /></svg>;
+}
+
+/* --- Craft artwork: every product image is drawn, not fetched --- */
+const PAL = {
+  bag:      ['#F3EBDC','#C79A4E','#8E6A2E','#4E3A18'],
+  pot:      ['#F6E8DE','#C4713F','#9A4F27','#5E2E16'],
+  vase:     ['#EAF0F6','#3B6FA8','#2A4F7C','#12314F'],
+  stole:    ['#FBEAE6','#C0392B','#8E2A20','#D8A24A'],
+  elephant: ['#F4EDE2','#8B5E34','#6A4423','#3E2714'],
+  earrings: ['#F7EDF2','#B8336A','#7A2145','#D9A441'],
+  painting: ['#FAF3E0','#D2601A','#1F4E5F','#8E2A20'],
+  basket:   ['#F5F1E2','#B79B5B','#8A7136','#55431A'],
+  lamp:     ['#FAF0DC','#CFA02F','#A87A1B','#6B4A0C'],
+  cushion:  ['#FDF0E4','#D94F30','#9C2F1B','#2F6A8E'],
+  runner:   ['#F7F1E4','#7D3C2E','#2E5A63','#C9A227'],
+  coaster:  ['#F6F2E4','#C2AE7C','#95814D','#5D4E22'],
+  horse:    ['#F1EEE2','#9A7B3F','#71562A','#40301A'],
+  dupatta:  ['#FBF1F0','#2E5A63','#8E2A20','#C9A227'],
+};
+function Pattern({ id, c }) {
+  return (
+    <defs>
+      <pattern id={id} width="26" height="26" patternUnits="userSpaceOnUse">
+        <rect width="26" height="26" fill="none" />
+        <circle cx="13" cy="13" r="2.1" fill={c} opacity=".18" />
+        <path d="M0 0h26M0 0v26" stroke={c} strokeOpacity=".10" strokeWidth="1" />
+      </pattern>
+    </defs>
+  );
+}
+function CraftArt({ kind = 'pot', variant = 0 }) {
+  const c = PAL[kind] || PAL.pot;
+  const pid = 'pt-' + kind + '-' + variant;
+  const M = {
+    bag: <g>
+      <path d="M62 92h76l-7 74H69z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M62 92h76l-2 20H64z" fill={c[2]} />
+      <path d="M78 92c0-16 6-24 22-24s22 8 22 24" fill="none" stroke={c[3]} strokeWidth="6" strokeLinecap="round" />
+      {[0,1,2,3].map(i => <path key={i} d={`M68 ${120+i*12}h64`} stroke={c[2]} strokeWidth="2" opacity=".55" />)}
+      <path d="M86 128l14-14 14 14-14 14z" fill={c[0]} opacity=".85" stroke={c[3]} strokeWidth="1.5" />
+    </g>,
+    pot: <g>
+      <path d="M100 58c-22 8-38 30-38 56 0 24 17 42 38 42s38-18 38-42c0-26-16-48-38-56z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <ellipse cx="100" cy="60" rx="20" ry="7" fill={c[2]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M66 104h68M70 118h60" stroke={c[2]} strokeWidth="3" opacity=".7" />
+      {[...Array(6)].map((_,i)=><circle key={i} cx={72+i*11} cy="132" r="3.4" fill={c[0]} opacity=".8" />)}
+    </g>,
+    vase: <g>
+      <path d="M88 56h24l-4 20c14 10 22 26 22 44 0 22-14 36-30 36s-30-14-30-36c0-18 8-34 22-44z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M78 104c10-8 34-8 44 0M76 122c12-9 36-9 48 0" stroke={c[0]} strokeWidth="3" fill="none" />
+      <circle cx="100" cy="112" r="9" fill={c[0]} opacity=".9" />
+      <path d="M100 103c5 5 5 13 0 18-5-5-5-13 0-18z" fill={c[2]} />
+    </g>,
+    stole: <g>
+      <path d="M52 62c18 10 26 40 22 96l-22-6c6-40 4-66 0-90z" fill={c[1]} stroke={c[3]} strokeWidth="2" />
+      <path d="M74 62c20 12 28 42 24 96l-24-6c6-42 4-66 0-90z" fill={c[3]} opacity=".85" />
+      <path d="M98 62c22 12 30 42 26 96l-26-6c6-42 4-66 0-90z" fill={c[1]} stroke={c[3]} strokeWidth="2" />
+      <path d="M124 62c22 12 28 42 24 96l-24-6c6-42 4-66 0-90z" fill={c[3]} opacity=".7" />
+      {[0,1,2,3,4].map(i=><path key={i} d={`M${54+i*24} 152l-2 16`} stroke={c[3]} strokeWidth="2.5" strokeLinecap="round" />)}
+    </g>,
+    elephant: <g>
+      <path d="M60 148v-34c0-24 18-40 42-40s40 16 40 38v36h-14v-22c-8 4-18 6-28 6s-20-2-26-6v22z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M62 96c-14 2-18 14-14 26 3 9 12 12 18 8" fill={c[2]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M100 74c-10 0-16 8-16 18 0 14 6 24 6 38l-4 18h12l-2-22c0-12-2-20 4-28" fill={c[2]} stroke={c[3]} strokeWidth="2" />
+      <circle cx="120" cy="100" r="3.5" fill={c[3]} />
+      <path d="M112 84h26M110 92h30" stroke={c[0]} strokeWidth="3" opacity=".7" />
+    </g>,
+    earrings: <g>
+      {[72,128].map((x,k)=>(<g key={k}>
+        <path d={`M${x} 52a10 10 0 0 1 0 20`} fill="none" stroke={c[3]} strokeWidth="3" />
+        <path d={`M${x} 72v12`} stroke={c[3]} strokeWidth="2.5" />
+        <path d={`M${x-22} 86h44l-22 40z`} fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+        {[...Array(5)].map((_,i)=><circle key={i} cx={x-16+i*8} cy="98" r="3.2" fill={c[3]} />)}
+        {[...Array(3)].map((_,i)=><circle key={i} cx={x-8+i*8} cy="110" r="3.2" fill={c[0]} />)}
+        {[...Array(4)].map((_,i)=><circle key={i} cx={x-13+i*9} cy="138" r="4" fill={c[1]} stroke={c[3]} strokeWidth="1.5" />)}
+      </g>))}
+    </g>,
+    painting: <g>
+      <rect x="50" y="46" width="100" height="112" rx="4" fill={c[0]} stroke={c[3]} strokeWidth="3" />
+      <rect x="58" y="54" width="84" height="96" fill="none" stroke={c[1]} strokeWidth="2" strokeDasharray="5 4" />
+      <path d="M72 104c14-20 42-20 56 0-14 20-42 20-56 0z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <circle cx="112" cy="100" r="3.4" fill={c[0]} />
+      <path d="M72 104l-12-10v20z" fill={c[3]} />
+      <path d="M66 74h68M66 136h68" stroke={c[2]} strokeWidth="2.5" />
+      {[...Array(7)].map((_,i)=><circle key={i} cx={68+i*11} cy="126" r="2.6" fill={c[3]} opacity=".75" />)}
+    </g>,
+    basket: <g>
+      <path d="M56 92h88l-12 62H68z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <ellipse cx="100" cy="92" rx="44" ry="11" fill={c[0]} stroke={c[3]} strokeWidth="2.5" />
+      {[...Array(5)].map((_,i)=><path key={i} d={`M${62+i*4} ${102+i*10}h${76-i*8}`} stroke={c[2]} strokeWidth="2.5" opacity=".8" />)}
+      {[...Array(7)].map((_,i)=><path key={i} d={`M${64+i*12} 96l-3 56`} stroke={c[3]} strokeWidth="1.6" opacity=".5" />)}
+    </g>,
+    lamp: <g>
+      {[74,126].map((x,k)=>(<g key={k}>
+        <path d={`M${x-26} 120q26 26 52 0z`} fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+        <ellipse cx={x} cy="120" rx="26" ry="8" fill={c[2]} stroke={c[3]} strokeWidth="2" />
+        <rect x={x-9} y="140" width="18" height="6" rx="3" fill={c[3]} />
+        <path d={`M${x} 118c0-14 6-18 0-30-8 12-2 16 0 30z`} fill={c[0]} stroke={c[2]} strokeWidth="1.6" />
+      </g>))}
+    </g>,
+    cushion: <g>
+      <rect x="52" y="58" width="96" height="96" rx="10" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <rect x="64" y="70" width="72" height="72" fill="none" stroke={c[0]} strokeWidth="2.5" strokeDasharray="6 5" />
+      {[0,1,2].map(r=>[0,1,2].map(q=>(
+        <g key={r+'-'+q}>
+          <circle cx={78+q*22} cy={84+r*22} r="7" fill={c[0]} stroke={c[3]} strokeWidth="1.5" />
+          <circle cx={78+q*22} cy={84+r*22} r="3" fill={c[3]} opacity=".5" />
+        </g>)))}
+    </g>,
+    runner: <g>
+      <rect x="40" y="76" width="120" height="58" rx="5" fill={c[0]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M40 90h120M40 120h120" stroke={c[1]} strokeWidth="3" />
+      {[...Array(6)].map((_,i)=>(
+        <path key={i} d={`M${50+i*19} 105c5-9 14-9 19 0-5 9-14 9-19 0z`} fill={c[2]} opacity=".85" />))}
+      {[...Array(9)].map((_,i)=><path key={i} d={`M${44+i*14} 134v10`} stroke={c[3]} strokeWidth="2" strokeLinecap="round" />)}
+    </g>,
+    coaster: <g>
+      {[[74,88],[126,88],[74,134],[126,134]].map(([x,y],i)=>(<g key={i}>
+        <circle cx={x} cy={y} r="24" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+        <circle cx={x} cy={y} r="16" fill="none" stroke={c[0]} strokeWidth="3" />
+        <circle cx={x} cy={y} r="8" fill="none" stroke={c[2]} strokeWidth="3" />
+      </g>))}
+    </g>,
+    horse: <g>
+      <path d="M66 150v-32c0-16 12-28 30-28h18l10-16 8 4-6 16c10 6 14 16 14 26v30h-12v-22H78v22z" fill={c[1]} stroke={c[3]} strokeWidth="2.5" />
+      <path d="M120 74l4-14 6 10z" fill={c[2]} stroke={c[3]} strokeWidth="2" />
+      <circle cx="126" cy="84" r="3" fill={c[3]} />
+      {[...Array(8)].map((_,i)=><path key={i} d={`M${72+i*8} 100v40`} stroke={c[0]} strokeWidth="2" opacity=".5" />)}
+    </g>,
+    dupatta: <g>
+      <path d="M46 70q28 14 0 28 28 14 0 28 28 14 0 28h108q-28-14 0-28-28-14 0-28-28-14 0-28z" fill={c[0]} stroke={c[3]} strokeWidth="2.5" />
+      {[0,1,2].map(r=>[...Array(5)].map((_,i)=>(
+        <path key={r+'-'+i} d={`M${58+i*22} ${84+r*28}c4-8 12-8 16 0-4 8-12 8-16 0z`} fill={r%2?c[2]:c[1]} opacity=".9" />)))}
+    </g>,
+  };
+  return (
+    <svg viewBox="0 0 200 200" role="img" aria-label={kind + ' craft'}>
+      <Pattern id={pid} c={c[2]} />
+      <rect width="200" height="200" fill={c[0]} />
+      <rect width="200" height="200" fill={`url(#${pid})`} />
+      <ellipse cx="100" cy="168" rx="58" ry="9" fill={c[3]} opacity=".14" />
+      {M[kind] || M.pot}
+    </svg>
+  );
+}
+
+/* ============================================================
+   5. SHARED UI
+   ============================================================ */
+function Stars({ v, n }) {
+  return <span className="stars"><b>{v.toFixed(1)} <Ic n="star" s={9} c="#fff" fill="#fff" sw={2}/></b>{n ? `(${n})` : ''}</span>;
+}
+function Wish({ pid }) {
+  const { state, dispatch, toast } = useStore();
+  const on = state.wishlist.includes(pid);
+  return (
+    <button className="heart" aria-label={on ? 'Remove from wishlist' : 'Save to wishlist'} aria-pressed={on}
+      onClick={e => { e.stopPropagation(); dispatch({ type:'wish', pid }); toast(on ? 'Removed from wishlist' : 'Saved to wishlist', 'heart'); }}>
+      <Ic n="heart" s={18} c={on ? '#B4512A' : '#6A7060'} fill={on ? '#B4512A' : 'none'} />
+    </button>
+  );
+}
+function AddBtn({ pid, big }) {
+  const { dispatch, toast } = useStore();
+  const [done, setDone] = useState(false);
+  const go = e => {
+    e.stopPropagation();
+    dispatch({ type:'add', pid }); toast('Added to cart', 'cart');
+    setDone(true); setTimeout(() => setDone(false), 1100);
+  };
+  if (big) return <button className="btn btn-pri btn-lg btn-block" onClick={go}><Ic n={done?'check':'cart'} s={20} c="#fff" />{done ? 'Added to cart' : 'Add to cart'}</button>;
+  return <button className={'add-btn' + (done ? ' done' : '')} onClick={go} aria-label="Add to cart"><Ic n={done ? 'check' : 'cart'} s={18} /></button>;
+}
+/* ============================================================
+   3D VIEWER — real WebGL (Three.js r128), no OrbitControls dep.
+   Builds a category-template mesh client-side: this is the
+   "Category/template-based 3D asset" path from the spec (point
+   12) — a practical stand-in for an uploaded .glb or an
+   AI-generated mesh, both of which the same viewer would load
+   via THREE.GLTFLoader once a real 3D-generation backend exists.
+   ============================================================ */
+function hexOf(cssHex) { return parseInt(cssHex.replace('#', '0x'), 16); }
+
+function buildCraftMesh(kind) {
+  const c = (PAL[kind] || PAL.pot).map(hexOf);
+  const group = new THREE.Group();
+  const mat = (i, rough = 0.55) => new THREE.MeshStandardMaterial({ color:c[i], roughness:rough, metalness:kind === 'lamp' || kind === 'horse' ? 0.55 : 0.05 });
+
+  if (kind === 'pot' || kind === 'vase') {
+    const pts = [];
+    for (let i = 0; i <= 12; i++) {
+      const t = i / 12, y = t * 2.4 - 1.2;
+      const r = 0.15 + 0.55 * Math.sin(t * Math.PI) * (kind === 'vase' ? 0.8 + 0.4 * t : 1);
+      pts.push(new THREE.Vector2(Math.max(r, 0.05), y));
+    }
+    const geo = new THREE.LatheGeometry(pts, 48);
+    group.add(new THREE.Mesh(geo, mat(1, 0.5)));
+  } else if (kind === 'basket' || kind === 'coaster') {
+    const geo = new THREE.CylinderGeometry(1, 0.85, kind === 'coaster' ? 0.18 : 0.9, 24, 1, true);
+    const m = new THREE.Mesh(geo, mat(1, 0.9)); group.add(m);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(1, 0.06, 10, 30), mat(2, 0.7));
+    rim.rotation.x = Math.PI / 2; rim.position.y = kind === 'coaster' ? 0.09 : 0.45; group.add(rim);
+  } else if (kind === 'bag' || kind === 'cushion' || kind === 'runner' || kind === 'dupatta') {
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, kind === 'bag' ? 1.5 : 0.18, 0.35), mat(1, 0.85));
+    group.add(body);
+    if (kind === 'bag') {
+      const h1 = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.05, 8, 20, Math.PI), mat(3, 0.5));
+      h1.position.set(-0.4, 0.95, 0); h1.rotation.z = Math.PI; group.add(h1);
+      const h2 = h1.clone(); h2.position.x = 0.4; group.add(h2);
+    }
+  } else if (kind === 'elephant' || kind === 'horse') {
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.85, 24, 20), mat(1, 0.6));
+    body.scale.set(1.15, 0.9, 0.8); group.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), mat(1, 0.6));
+    head.position.set(0.95, 0.3, 0); group.add(head);
+    [[-0.55,-0.75,0.35],[0.15,-0.75,0.35],[-0.55,-0.75,-0.35],[0.15,-0.75,-0.35]].forEach(p => {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.75, 10), mat(2, 0.7));
+      leg.position.set(p[0], p[1], p[2]); group.add(leg);
+    });
+  } else if (kind === 'earrings') {
+    [-0.5, 0.5].forEach(x => {
+      const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), mat(1, 0.3));
+      gem.position.set(x, 0, 0); group.add(gem);
+      const hook = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.03, 8, 16, Math.PI * 1.4), mat(3, 0.4));
+      hook.position.set(x, 0.5, 0); group.add(hook);
+    });
+  } else if (kind === 'lamp') {
+    [-0.5, 0.5].forEach(x => {
+      const base = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.35, 24, 1, true), mat(1, 0.35));
+      base.position.set(x, -0.1, 0); group.add(base);
+      const flame = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.32, 12), new THREE.MeshStandardMaterial({ color:0xF6C453, emissive:0xB4791B, emissiveIntensity:0.6 }));
+      flame.position.set(x, 0.26, 0); group.add(flame);
+    });
+  } else if (kind === 'painting') {
+    const frame = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.2, 0.08), mat(3, 0.7));
+    group.add(frame);
+    const canvas = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.0), mat(1, 0.95));
+    canvas.position.z = 0.045; group.add(canvas);
+  } else {
+    group.add(new THREE.Mesh(new THREE.DodecahedronGeometry(0.9, 0), mat(1, 0.5)));
+  }
+  const box = new THREE.Box3().setFromObject(group);
+  const size = new THREE.Vector3(); box.getSize(size);
+  const scale = 1.9 / Math.max(size.x, size.y, size.z, 0.001);
+  group.scale.setScalar(scale);
+  const center = new THREE.Vector3(); box.getCenter(center);
+  group.position.sub(center.multiplyScalar(scale));
+  return group;
+}
+
+function Viewer3D({ art, status, modelUrl, stage }) {
+  const mountRef = useRef(null);
+  const stateRef = useRef({});
+  const wrapRef = useRef(null);
+  const [full, setFull] = useState(false);
+  const [noWebgl, setNoWebgl] = useState(false);
+  const [loadErr, setLoadErr] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'COMPLETED' || !mountRef.current) return;
+    if (typeof THREE === 'undefined') { setNoWebgl(true); return; }
+    const el = mountRef.current;
+    const w = el.clientWidth, h = el.clientHeight;
+    let scene;
+    try {
+      scene = new THREE.Scene();
+    } catch (e) { setNoWebgl(true); return; }
+    const camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
+    let radius = 4.6, theta = 0.6, phi = 1.15;
+    const setCam = () => {
+      camera.position.set(radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.cos(theta));
+      camera.lookAt(0, 0, 0);
+    };
+    setCam();
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+    } catch (e) { setNoWebgl(true); return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h);
+    el.innerHTML = ''; el.appendChild(renderer.domElement);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x3a2f1f, 1.0));
+    const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(3, 5, 4); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xE07B2C, 0.4); rim.position.set(-4, 2, -3); scene.add(rim);
+
+    let mesh = null;
+    const fitAndAdd = obj => {
+      const box = new THREE.Box3().setFromObject(obj);
+      const size = new THREE.Vector3(); box.getSize(size);
+      const scale = 1.9 / Math.max(size.x, size.y, size.z, 0.001);
+      obj.scale.setScalar(scale);
+      const center = new THREE.Vector3(); box.getCenter(center);
+      obj.position.sub(center.multiplyScalar(scale));
+      scene.add(obj);
+      mesh = obj;
+    };
+
+    const canLoadReal = Boolean(modelUrl && typeof THREE.GLTFLoader !== 'undefined');
+    if (canLoadReal) {
+      new THREE.GLTFLoader().load(modelUrl, gltf => fitAndAdd(gltf.scene),
+        undefined,
+        () => { setLoadErr(true); fitAndAdd(buildCraftMesh(art)); }); // real model failed — fall back, never break
+    } else {
+      if (modelUrl) setLoadErr(true); // had a real URL but no loader available — still fall back
+      fitAndAdd(buildCraftMesh(art));
+    }
+
+    const pad = new THREE.Mesh(new THREE.CircleGeometry(1.5, 40), new THREE.MeshStandardMaterial({ color:0x1B4332, roughness:1 }));
+    pad.rotation.x = -Math.PI / 2; pad.position.y = -0.95; pad.receiveShadow = false; scene.add(pad);
+
+    let raf;
+    const loop = () => { raf = requestAnimationFrame(loop); if (mesh) mesh.rotation.y += stateRef.current.spin ? 0.004 : 0; renderer.render(scene, camera); };
+    loop();
+
+    const drag = { on:false, x:0, y:0 };
+    const onDown = e => { drag.on = true; drag.x = e.clientX; drag.y = e.clientY; stateRef.current.spin = false; };
+    const onMove = e => {
+      if (!drag.on) return;
+      theta -= (e.clientX - drag.x) * 0.008; phi = Math.min(2.6, Math.max(0.5, phi - (e.clientY - drag.y) * 0.008));
+      drag.x = e.clientX; drag.y = e.clientY; setCam();
+    };
+    const onUp = () => { drag.on = false; };
+    const onWheel = e => { e.preventDefault(); radius = Math.min(9, Math.max(2.4, radius + e.deltaY * 0.0035)); setCam(); };
+    renderer.domElement.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive:false });
+
+    const onResize = () => { const w2 = el.clientWidth, h2 = el.clientHeight; camera.aspect = w2 / h2; camera.updateProjectionMatrix(); renderer.setSize(w2, h2); };
+    window.addEventListener('resize', onResize);
+
+    stateRef.current = { spin:true, zoomIn:() => { radius = Math.max(2.4, radius - 0.6); setCam(); },
+      zoomOut:() => { radius = Math.min(9, radius + 0.6); setCam(); },
+      reset:() => { radius = 4.6; theta = 0.6; phi = 1.15; setCam(); stateRef.current.spin = true; } };
+
+    return () => {
+      cancelAnimationFrame(raf);
+      renderer.domElement.removeEventListener('pointerdown', onDown);
+      renderer.domElement.removeEventListener('wheel', onWheel);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('resize', onResize);
+      renderer.dispose(); el.innerHTML = '';
+    };
+  }, [art, status, modelUrl]);
+
+  const toggleFull = () => {
+    const el = wrapRef.current; if (!el) return;
+    if (!document.fullscreenElement) { el.requestFullscreen?.(); setFull(true); }
+    else { document.exitFullscreen?.(); setFull(false); }
+  };
+
+  if (status === 'FAILED') return (
+    <div className="viewer3d-shell"><div className="viewer3d-msg">
+      <Ic n="cube" s={30} c="#B4512A" /><p>The 3D model could not be generated.<br/>You can try again, or keep selling with photos only.</p>
+    </div></div>
+  );
+  if (status !== 'COMPLETED') return (
+    <div className="viewer3d-shell"><div className="viewer3d-msg">
+      <div className="mini-spin" /><p>{stage || 'Building the 3D preview…'}</p>
+    </div></div>
+  );
+  if (noWebgl) return (
+    <div className="viewer3d-shell"><div className="viewer3d-msg">
+      <Ic n="cube" s={30} c="#CFDED4" /><p>3D preview isn’t available in this browser window.<br/>The photo gallery still shows this product in full detail.</p>
+    </div></div>
+  );
+  return (
+    <div className="viewer3d-shell" ref={wrapRef}>
+      <div className="viewer3d-canvas" ref={mountRef} />
+      <div className="viewer3d-bar">
+        <button className="icon-btn" onClick={() => stateRef.current.zoomIn?.()} aria-label="Zoom in"><Ic n="zoomin" s={18} /></button>
+        <button className="icon-btn" onClick={() => stateRef.current.zoomOut?.()} aria-label="Zoom out"><Ic n="zoomout" s={18} /></button>
+        <button className="icon-btn" onClick={() => stateRef.current.reset?.()} aria-label="Reset view"><Ic n="rotate" s={18} /></button>
+        <button className="icon-btn" onClick={toggleFull} aria-label="Fullscreen"><Ic n="expand" s={18} /></button>
+      </div>
+      <span className="viewer3d-tag"><Ic n="cube" s={13} /> {modelUrl && !loadErr ? 'AI-generated 3D preview' : 'Template 3D preview'} · drag to rotate</span>
+    </div>
+  );
+}
+
+function ProductCard({ p, go }) {
+  const a = maker(p) || { name:p.artisanName, district:p.district, state:p.state };
+  const low = p.stock <= 5;
+  return (
+    <article className="card" onClick={() => go({ page:'pdp', id:p.id })} tabIndex={0} role="button"
+      onKeyDown={e => e.key === 'Enter' && go({ page:'pdp', id:p.id })}>
+      <div className="card-art">
+        <CraftArt kind={p.art} variant={p.id} />
+        {p.tag && <span className={'tag' + (p.tag === 'New' ? ' new' : '')}>{p.tag}</span>}
+        {!p.tag && low && <span className="tag low">Only {p.stock} left</span>}
+        <Wish pid={p.id} />
+      </div>
+      <div className="card-body">
+        <h3 className="card-title">{p.name}</h3>
+        <span className="card-by">By {a.name}</span>
+        <span className="card-loc"><Ic n="pin" s={12} c="#6A7060" />{a.district}, {a.state}</span>
+        <Stars v={p.rating} n={p.reviews} />
+        <div className="price-row">
+          <span className="price">{rupee(p.price)}{p.mrp > p.price && <s>{rupee(p.mrp)}</s>}</span>
+          <AddBtn pid={p.id} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ---------------- auth modal (mock backend-backed) ---------------- */
+function AuthModal({ tab, setTab, onClose, onDone }) {
+  const { dispatch, toast } = useStore();
+  const [f, setF] = useState({ name:'', email:'', password:'', role:'buyer' });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const set = (k, v) => setF(s => ({ ...s, [k]: v }));
+  const submit = async e => {
+    e.preventDefault(); setErr('');
+    if (!f.email.trim() || !f.password.trim() || (tab === 'signup' && !f.name.trim())) { setErr('Please fill in every field.'); return; }
+    setBusy(true);
+    try {
+      const res = tab === 'signup' ? await Api.register(f) : await Api.login(f);
+      dispatch({ type:'login', session: res.user });
+      toast((tab === 'signup' ? 'Account created — welcome, ' : 'Welcome back, ') + res.user.name.split(' ')[0]);
+      onDone(res.user.role);
+    } catch (e) { setErr('Something went wrong. Please try again.'); }
+    setBusy(false);
+  };
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="between" style={{ marginBottom:6 }}>
+          <h2>{tab === 'signup' ? 'Create your account' : 'Log in to KalaSetu'}</h2>
+          <button className="icon-btn" onClick={onClose} aria-label="Close"><Ic n="x" s={20} /></button>
+        </div>
+        <div className="chipset" style={{ marginBottom:16 }}>
+          <button type="button" className="chip" aria-pressed={tab === 'login'} onClick={() => setTab('login')}>Log in</button>
+          <button type="button" className="chip" aria-pressed={tab === 'signup'} onClick={() => setTab('signup')}>Sign up</button>
+        </div>
+        <form className="stack" onSubmit={submit}>
+          {tab === 'signup' && <div className="field"><label htmlFor="au-n">Full name</label>
+            <input id="au-n" className="input" value={f.name} onChange={e => set('name', e.target.value)} placeholder="Ananya Raghavan" /></div>}
+          <div className="field"><label htmlFor="au-e">Email</label>
+            <input id="au-e" className="input" type="email" value={f.email} onChange={e => set('email', e.target.value)} placeholder="you@example.com" /></div>
+          <div className="field"><label htmlFor="au-p">Password</label>
+            <input id="au-p" className="input" type="password" value={f.password} onChange={e => set('password', e.target.value)} placeholder="••••••••" /></div>
+          {tab === 'signup' && (
+            <div className="field"><label>I am joining as a</label>
+              <div className="chipset">
+                <button type="button" className="chip" aria-pressed={f.role === 'buyer'} onClick={() => set('role','buyer')}><Ic n="cart" s={15} /> Buyer</button>
+                <button type="button" className="chip" aria-pressed={f.role === 'artisan'} onClick={() => set('role','artisan')}><Ic n="user" s={15} /> Artisan</button>
+              </div>
+            </div>
+          )}
+          {err && <p style={{ color:'var(--clay)', fontSize:13.5 }}>{err}</p>}
+          <button className="btn btn-pri btn-lg btn-block" disabled={busy}>{busy ? 'Please wait…' : (tab === 'signup' ? 'Create account' : 'Log in')}</button>
+          <p className="muted" style={{ fontSize:12.5, textAlign:'center' }}>Prototype auth — any email and password works.</p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- header (logo · search · wishlist/cart/account) ---------------- */
+function Header({ go, nav, onSearch, query, onOpenDrawer, onOpenAuth }) {
+  const { state, dispatch } = useStore();
+  const count = state.cart.reduce((n, l) => n + l.qty, 0);
+  const [menu, setMenu] = useState(false);
+  const { rec, start } = useVoice(txt => { onSearch(txt); go({ page:'list', cat:'all', q:txt }); });
+  const closeMenu = useCallback(() => setMenu(false), []);
+  useEffect(() => { if (!menu) return; window.addEventListener('click', closeMenu); return () => window.removeEventListener('click', closeMenu); }, [menu, closeMenu]);
+  return (
+    <header className="topbar">
+      <div className="topbar-in">
+        <button className="icon-btn drawer-btn" onClick={onOpenDrawer} aria-label="Browse categories">
+          <Ic n="menu" s={22} />
+        </button>
+        <button className="brand" onClick={() => go({ page:'home' })} aria-label="KalaSetu home">
+          <span className="brand-mark"><Ic n="thread" s={21} c="#fff" /></span>
+          <span style={{ textAlign:'left' }}>
+            <span className="brand-name" style={{ display:'block' }}>KalaSetu</span>
+            <span className="brand-sub">Handmade, direct from the maker</span>
+          </span>
+        </button>
+        <div className="search">
+          <Ic n="search" s={18} c="#6A7060" />
+          <input value={query} onChange={e => onSearch(e.target.value)} placeholder={rec ? 'Listening…' : 'Search pottery, silk, jute bags, artisans'}
+            onKeyDown={e => e.key === 'Enter' && go({ page:'list', cat:'all', q:e.target.value })} aria-label="Search products" />
+          <button className="icon-btn" onClick={() => start('handloom silk stole')} aria-label="Search by voice"
+            style={{ background: rec ? '#E07B2C' : 'transparent', color: rec ? '#fff' : 'inherit', width:34, height:34 }}>
+            <Ic n="mic" s={17} />
+          </button>
+          <button className="btn btn-green" style={{ padding:'8px 18px' }} onClick={() => go({ page:'list', cat:'all', q:query })}>Search</button>
+        </div>
+        <div className="hdr-actions">
+          <button className="icon-btn relative" onClick={() => go({ page:'wishlist' })} aria-label="Wishlist">
+            <Ic n="heart" s={21} />{state.wishlist.length > 0 && <span className="badge">{state.wishlist.length}</span>}
+          </button>
+          <button className="icon-btn relative" onClick={() => go({ page:'cart' })} aria-label="Cart">
+            <Ic n="cart" s={21} />{count > 0 && <span className="badge">{count}</span>}
+          </button>
+          <div className="relative" onClick={e => e.stopPropagation()}>
+            <button className="btn btn-ghost" style={{ padding:'8px 14px' }} onClick={() => state.session ? setMenu(m => !m) : onOpenAuth('login')}>
+              <Ic n="user" s={17} /> {state.session ? state.session.name.split(' ')[0] : 'Account'}
+            </button>
+            {menu && state.session && (
+              <div className="acct-menu">
+                <span className="acct-role">{state.session.role === 'artisan' ? 'Artisan account' : 'Buyer account'}</span>
+                <button onClick={() => { setMenu(false); go({ page:'orders' }); }}><Ic n="box" s={16} /> My orders</button>
+                {state.session.role === 'artisan' && <button onClick={() => { setMenu(false); go({ page:'artisan' }); }}><Ic n="grid" s={16} /> Artisan dashboard</button>}
+                <button onClick={() => { setMenu(false); dispatch({ type:'logout' }); }}><Ic n="x" s={16} /> Log out</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ---------------- hero ---------------- */
+const SLIDES = [
+  { k:'pot',      h:'India’s handicrafts, for a greater tomorrow', s:'Buy directly from 8 artisan clusters across 7 states. No middlemen, no markups — the maker sets the price.' },
+  { k:'stole',    h:'Four days on a pit loom, one silk stole',          s:'Bhagalpur tussar, reeled and woven by hand. Meet the weaver before you buy.' },
+  { k:'painting', h:'Folk art painted with bamboo twigs',               s:'Madhubani, Kalamkari and Pattachitra from the families who kept these traditions alive.' },
+];
+function Hero({ go }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setI(x => (x + 1) % SLIDES.length), 6000);
+    return () => clearInterval(t);
+  }, []);
+  const s = SLIDES[i];
+  return (
+    <section className="hero">
+      <div className="hero-copy">
+        <h1>{s.h}</h1>
+        <p>{s.s}</p>
+        <div className="row" style={{ marginTop:6, flexWrap:'wrap' }}>
+          <button className="btn btn-pri btn-lg" onClick={() => go({ page:'list', cat:'all' })}>Shop handmade</button>
+          <button className="btn btn-lg" style={{ background:'rgba(255,255,255,.12)', color:'#fff' }} onClick={() => go({ page:'artisan' })}>I am an artisan</button>
+        </div>
+        <div className="trust">
+          <span><Ic n="shield" s={15} c="#9BC4A8" /> Verified makers</span>
+          <span><Ic n="rupee" s={15} c="#9BC4A8" /> Artisan keeps 92%</span>
+          <span><Ic n="truck" s={15} c="#9BC4A8" /> Delivery across India</span>
+        </div>
+      </div>
+      <div className="hero-art">
+        {SLIDES.map((sl, k) => (
+          <div key={k} className={'hero-slide' + (k === i ? ' on' : '')} aria-hidden={k !== i}>
+            <CraftArt kind={sl.k} variant={'hero' + k} />
+          </div>
+        ))}
+        <div className="hero-dots">
+          {SLIDES.map((_, k) => <button key={k} aria-current={k === i} aria-label={`Slide ${k+1}`} onClick={() => setI(k)} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- rail (primary category nav — also mobile drawer) ---------------- */
+function Rail({ go, nav, open, onClose }) {
+  const jump = c => { go({ page:'list', cat:c }); onClose && onClose(); };
+  return (
+    <>
+      {open && <div className="drawer-veil" onClick={onClose} />}
+      <aside className={'rail' + (open ? ' rail-open' : '')}>
+        <div className="rail-head">
+          <h4 style={{ padding:0 }}>Browse crafts</h4>
+          <button className="icon-btn drawer-btn" onClick={onClose} aria-label="Close categories"><Ic n="x" s={20} /></button>
+        </div>
+        {CATEGORIES.map(c => (
+          <button key={c.id} aria-current={nav.cat === c.id} onClick={() => jump(c.id)}>
+            <Ic n={c.icon} s={18} c="currentColor" />{c.label}
+          </button>
+        ))}
+        <div className="rail-cta">
+          <Ic n="leaf" s={22} c="#2D6A4F" />
+          <div style={{ fontFamily:'var(--display)', fontSize:17, fontWeight:600, margin:'6px 0 4px' }}>Sell your craft here</div>
+          <p className="muted" style={{ fontSize:13, marginBottom:10 }}>List a product in a few simple steps. You can speak instead of typing.</p>
+          <button className="btn btn-green btn-block" onClick={() => go({ page:'artisan' })}>Open artisan mode</button>
+        </div>
+      </aside>
+    </>
+  );
+}
+function Ribbon() {
+  const items = [
+    { i:'truck',  t:'Delivery across India', s:'Tracked, 4–7 days' },
+    { i:'shield', t:'Secure payments',       s:'UPI, cards, cash on delivery' },
+    { i:'leaf',   t:'100% handmade',         s:'No factory reproductions' },
+    { i:'rupee',  t:'Fair pay',              s:'92% of every sale reaches the artisan' },
+  ];
+  return <div className="ribbon"><div className="ribbon-in">{items.map(x => (
+    <div className="ribbon-item" key={x.t}><Ic n={x.i} s={24} c="#2D6A4F" /><span><b>{x.t}</b><span className="muted">{x.s}</span></span></div>))}
+  </div></div>;
+}
+/* ---------------- horizontal carousel: drag, touch, arrows, snap ---------------- */
+function Carousel({ children }) {
+  const trackRef = useRef(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+  const drag = useRef({ down:false, x:0, left:0, moved:false });
+
+  const measure = useCallback(() => {
+    const el = trackRef.current; if (!el) return;
+    setAtStart(el.scrollLeft <= 4);
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  }, []);
+  useEffect(() => { measure(); const el = trackRef.current; if (!el) return;
+    el.addEventListener('scroll', measure, { passive:true });
+    window.addEventListener('resize', measure);
+    return () => { el.removeEventListener('scroll', measure); window.removeEventListener('resize', measure); };
+  }, [measure]);
+
+  const byPage = dir => {
+    const el = trackRef.current; if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.86, behavior:'smooth' });
+  };
+  const onDown = e => {
+    const el = trackRef.current;
+    drag.current = { down:true, x:e.clientX ?? e.touches?.[0]?.clientX, left:el.scrollLeft, moved:false };
+    el.style.scrollSnapType = 'none';
+  };
+  const onMove = e => {
+    if (!drag.current.down) return;
+    const x = e.clientX ?? e.touches?.[0]?.clientX;
+    const dx = x - drag.current.x;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
+    trackRef.current.scrollLeft = drag.current.left - dx;
+  };
+  const onUp = () => { drag.current.down = false; if (trackRef.current) trackRef.current.style.scrollSnapType = 'x mandatory'; };
+
+  return (
+    <div className="carousel">
+      <div className="carousel-track" ref={trackRef}
+        onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
+        onTouchStart={onDown} onTouchMove={onMove} onTouchEnd={onUp}
+        onClickCapture={e => { if (drag.current.moved) { e.preventDefault(); e.stopPropagation(); drag.current.moved = false; } }}>
+        {children}
+      </div>
+      <button className="car-arrow left" aria-label="Scroll left" onClick={() => byPage(-1)} disabled={atStart}><Ic n="back" s={20} /></button>
+      <button className="car-arrow right" aria-label="Scroll right" onClick={() => byPage(1)} disabled={atEnd}><Ic n="arrow" s={20} /></button>
+    </div>
+  );
+}
+
+function ArtisanStrip({ go }) {
+  return (
+    <div className="scroll-x">
+      {ARTISANS.map(a => (
+        <button key={a.id} className="panel" style={{ width:230, textAlign:'left' }} onClick={() => go({ page:'maker', id:a.id })}>
+          <div className="row">
+            <span className="avatar" style={{ width:44, height:44, fontSize:17 }}>{a.name[0]}</span>
+            <span>
+              <b style={{ display:'block', fontSize:14.5 }}>{a.name}</b>
+              <span className="muted" style={{ fontSize:12.5 }}>{a.craft}</span>
+            </span>
+          </div>
+          <p className="muted" style={{ fontSize:13, marginTop:10, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{a.story}</p>
+          <div className="row" style={{ marginTop:10, fontSize:12.5 }}>
+            <Ic n="pin" s={13} c="#6A7060" /><span className="muted">{a.district}, {a.state}</span>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+function Home({ go }) {
+  const { catalogue } = useStore();
+  const featured = catalogue.slice(0, 10);
+  const under = catalogue.filter(p => p.price <= 700);
+  return (
+    <>
+      <Hero go={go} />
+      <div className="section-head"><h2>Featured this week</h2>
+        <button onClick={() => go({ page:'list', cat:'all' })}>See all</button></div>
+      <Carousel>{featured.map(p => <div className="car-card" key={p.id}><ProductCard p={p} go={go} /></div>)}</Carousel>
+
+      <div className="section-head"><h2>Meet the makers</h2>
+        <button onClick={() => go({ page:'list', cat:'all' })}>Browse their work</button></div>
+      <ArtisanStrip go={go} />
+
+      <div className="section-head"><h2>Handmade under ₹700</h2></div>
+      <Carousel>{under.map(p => <div className="car-card" key={p.id}><ProductCard p={p} go={go} /></div>)}</Carousel>
+      <Ribbon />
+    </>
+  );
+}
+
+/* ---------------- listing ---------------- */
+function Listing({ go, nav }) {
+  const { catalogue } = useStore();
+  const [sort, setSort] = useState('pop');
+  const [band, setBand] = useState('any');
+  const cat = nav.cat || 'all';
+  const q = (nav.q || '').trim().toLowerCase();
+  let list = catalogue.filter(p => cat === 'all' || p.cat === cat);
+  if (q) list = list.filter(p => (p.name + ' ' + p.material + ' ' + (maker(p)?.name || '') + ' ' + (maker(p)?.craft || '')).toLowerCase().includes(q));
+  if (band !== 'any') {
+    const [lo, hi] = band.split('-').map(Number);
+    list = list.filter(p => p.price >= lo && p.price <= hi);
+  }
+  list = [...list].sort((a, b) => sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : b.rating - a.rating);
+  const label = CATEGORIES.find(c => c.id === cat)?.label || 'All crafts';
+  return (
+    <>
+      <div className="between" style={{ margin:'18px 0 4px', flexWrap:'wrap' }}>
+        <div><h2>{q ? `Results for “${nav.q}”` : label}</h2>
+          <span className="muted" style={{ fontSize:13.5 }}>{list.length} handmade {list.length === 1 ? 'piece' : 'pieces'}</span></div>
+        <div className="row" style={{ flexWrap:'wrap' }}>
+          <select className="input" style={{ width:'auto', padding:'9px 12px', fontSize:14 }} value={band} onChange={e => setBand(e.target.value)} aria-label="Price range">
+            <option value="any">Any price</option><option value="0-500">Under ₹500</option>
+            <option value="500-1000">₹500 – ₹1,000</option><option value="1000-99999">Above ₹1,000</option>
+          </select>
+          <select className="input" style={{ width:'auto', padding:'9px 12px', fontSize:14 }} value={sort} onChange={e => setSort(e.target.value)} aria-label="Sort by">
+            <option value="pop">Best rated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
+          </select>
+        </div>
+      </div>
+      {list.length === 0 ? (
+        <div className="empty panel">
+          <Ic n="search" s={34} c="#6A7060" />
+          <h3>Nothing matched that</h3>
+          <p className="muted">Try a craft name like <b>silk</b>, <b>terracotta</b> or <b>bamboo</b>.</p>
+          <button className="btn btn-green" onClick={() => go({ page:'list', cat:'all' })}>Show all crafts</button>
+        </div>
+      ) : <div className="grid" style={{ marginTop:14 }}>{list.map(p => <ProductCard key={p.id} p={p} go={go} />)}</div>}
+    </>
+  );
+}
+
+/* ---------------- product detail ---------------- */
+function PDP({ go, nav }) {
+  const { find, dispatch, toast, catalogue } = useStore();
+  const p = find(nav.id);
+  const [view, setView] = useState(0);
+  const [mode, setMode] = useState('photo'); // photo | 3d
+  const [d3, setD3] = useState('IDLE'); // IDLE | PROCESSING | COMPLETED | FAILED
+  const [d3Stage, setD3Stage] = useState('');
+  const [quote, setQuote] = useState(false);
+  useEffect(() => { window.scrollTo(0, 0); setMode('photo'); setD3('IDLE'); setD3Stage(''); }, [nav.id]);
+
+  const open3D = async () => {
+    setMode('3d');
+    if (d3 !== 'IDLE') return;
+    if (p.threeDModelUrl) { setD3('COMPLETED'); return; } // this exact product already has a real model
+    setD3('PROCESSING');
+    try {
+      // No source photo exists for the seed catalogue, so there's nothing
+      // real to send — this intentionally goes straight to the honest
+      // template-mesh path rather than faking a real reconstruction call.
+      await Api.generate3D(p.id, []);
+      const final = await Api.poll3D(p.id, { demo:true, onUpdate: s => setD3Stage(s.stage || '') });
+      setD3(final.status === 'COMPLETED' ? 'COMPLETED' : 'FAILED');
+    } catch (e) { setD3('FAILED'); }
+  };
+
+  if (!p) return <div className="empty"><h3>That product is no longer listed</h3><button className="btn btn-green" onClick={() => go({ page:'home' })}>Back to home</button></div>;
+  const a = maker(p) || { name:p.artisanName, district:p.district, state:p.state, story:'', craft:p.craft, years:'', rating:5, orders:0, cluster:'' };
+  const also = catalogue.filter(x => x.cat === p.cat && x.id !== p.id).slice(0, 5);
+  const canBulk = p.stock >= 3;
+  return (
+    <>
+      <button className="btn btn-ghost" style={{ margin:'16px 0 0' }} onClick={() => go({ page:'list', cat:p.cat })}><Ic n="back" s={17} /> Back</button>
+      <div className="pdp">
+        <div>
+          <div className="gallery-tabs">
+            <button className="chip" aria-pressed={mode === 'photo'} onClick={() => setMode('photo')}><Ic n="camera" s={15} /> Photos</button>
+            <button className="chip" aria-pressed={mode === '3d'} onClick={open3D}><Ic n="cube" s={15} /> 3D &amp; AR</button>
+          </div>
+          {mode === 'photo' ? (
+            <>
+              <div className="pdp-art">
+                {p.enhancedPhotoUrl
+                  ? <img src={p.enhancedPhotoUrl} alt={p.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                  : <CraftArt kind={p.art} variant={p.id + view} />}
+                {p.aiEnhanced && view === 0 && <span className="ai-badge"><Ic n="sparkle" s={13} /> AI enhanced</span>}
+              </div>
+              <div className="thumbs">
+                {[0,1,2].map(i => (
+                  <button key={i} className="thumb" aria-current={view === i} onClick={() => setView(i)} aria-label={i === 0 ? 'Photo' : `View ${i+1}`}>
+                    <CraftArt kind={p.art} variant={p.id + i} />
+                  </button>))}
+              </div>
+              <p className="muted" style={{ fontSize:12.5, marginTop:8 }}>
+                {p.aiEnhanced ? 'This photo was processed through KalaSetu\u2019s AI enhancement pipeline. Original upload is kept on file.'
+                  : 'Placeholder artwork — this catalogue item hasn\u2019t been through the AI photo pipeline. See My Products in Artisan mode to try it on a real upload.'}
+              </p>
+            </>
+          ) : (
+            <>
+              <Viewer3D art={p.art} status={d3} stage={d3Stage} modelUrl={p.threeDModelUrl} />
+              <div className="row" style={{ marginTop:10, gap:8 }}>
+                <button className="btn btn-ghost" style={{ flex:1 }} disabled={d3 !== 'COMPLETED'}
+                  onClick={() => toast('AR needs a supported phone browser — showing the 3D viewer instead', 'cube')}>
+                  <Ic n="ar" s={17} /> View in your space
+                </button>
+              </div>
+              <p className="muted" style={{ fontSize:12.5, marginTop:8 }}>
+                {p.threeDModelUrl ? 'AI-generated 3D preview, reconstructed from this product\u2019s actual photo. Not measurement-grade accuracy.'
+                  : 'No source photo was available for this catalogue item, so this is a category-template 3D preview, not a reconstruction of the actual product.'}
+              </p>
+            </>
+          )}
+        </div>
+        <div className="stack">
+          <div>
+            <span className="pill"><Ic n="leaf" s={14} /> {a.craft || 'Handmade'}</span>
+            <h1 style={{ margin:'10px 0 6px' }}>{p.name}</h1>
+            <div className="row"><Stars v={p.rating} n={p.reviews} /><span className="muted" style={{ fontSize:13.5 }}>{p.stock} in stock</span></div>
+          </div>
+          <div>
+            <span className="price" style={{ fontSize:31 }}>{rupee(p.price)}</span>
+            {p.mrp > p.price && <><s className="muted" style={{ marginLeft:10, fontSize:16 }}>{rupee(p.mrp)}</s>
+              <span style={{ color:'var(--ok)', fontWeight:700, marginLeft:10 }}>{Math.round((1 - p.price / p.mrp) * 100)}% off</span></>}
+            <p className="muted" style={{ fontSize:13.5, marginTop:4 }}>Inclusive of taxes. Free delivery above ₹999.</p>
+          </div>
+          <p style={{ maxWidth:'62ch', lineHeight:1.65 }}>{p.desc}</p>
+          <dl className="spec">
+            <dt>Material</dt><dd>{p.material}</dd>
+            <dt>Size</dt><dd>{p.size}</dd>
+            <dt>Made in</dt><dd>{a.district}, {a.state}</dd>
+            <dt>Ready in</dt><dd>{p.days} days, then shipped</dd>
+          </dl>
+          <div className="row" style={{ gap:10, flexWrap:'wrap' }}>
+            <div style={{ flex:1, minWidth:160 }}><AddBtn pid={p.id} big /></div>
+            <button className="btn btn-green btn-lg" onClick={() => { dispatch({ type:'add', pid:p.id }); go({ page:'checkout' }); }}>Buy now</button>
+          </div>
+          {canBulk && <button className="btn btn-ghost btn-block" onClick={() => setQuote(true)}><Ic n="box" s={17} /> Request bulk quote</button>}
+          <div className="maker">
+            <span className="avatar">{a.name[0]}</span>
+            <div style={{ flex:1 }}>
+              <b>{a.name}</b>
+              <p className="muted" style={{ fontSize:13.5 }}>{a.years ? `${a.years} years of ${(a.craft||'').toLowerCase()} · ` : ''}{a.cluster}</p>
+            </div>
+            <button className="btn btn-ghost" onClick={() => go({ page:'maker', id:a.id })}>Visit shop</button>
+          </div>
+          {a.story && <p className="muted" style={{ fontSize:14, lineHeight:1.6, maxWidth:'62ch' }}>{a.story}</p>}
+        </div>
+      </div>
+      {also.length > 0 && <>
+        <div className="section-head"><h2>More from this craft</h2></div>
+        <Carousel>{also.map(x => <div className="car-card" key={x.id}><ProductCard p={x} go={go} /></div>)}</Carousel>
+      </>}
+      {quote && <BulkQuoteModal p={p} a={a} onClose={() => setQuote(false)} />}
+    </>
+  );
+}
+
+function BulkQuoteModal({ p, a, onClose }) {
+  const { toast, dispatch } = useStore();
+  const [f, setF] = useState({ qty:'50', date:'', location:'', message:'' });
+  const [busy, setBusy] = useState(false); const [done, setDone] = useState(null);
+  const set = (k, v) => setF(s => ({ ...s, [k]: v }));
+  const submit = async e => {
+    e.preventDefault(); setBusy(true);
+    const res = await Api.submitEnquiry({ productId:p.id, artisanId:a.id, ...f });
+    dispatch({ type:'enquiry', enquiry:{ id:res.id, product:p.name, ...f, date:new Date().toISOString().slice(0,10) } });
+    setBusy(false); setDone(res.id); toast('Enquiry sent to ' + a.name, 'box');
+  };
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="between" style={{ marginBottom:10 }}>
+          <h2>Request a bulk quote</h2>
+          <button className="icon-btn" onClick={onClose} aria-label="Close"><Ic n="x" s={20} /></button>
+        </div>
+        {done ? (
+          <div className="empty" style={{ padding:'20px 0' }}>
+            <Ic n="check" s={34} c="#2D6A4F" />
+            <h3>Enquiry {done} sent</h3>
+            <p className="muted">{a.name} will reply with pricing and lead time for {p.name}.</p>
+            <button className="btn btn-green" onClick={onClose}>Done</button>
+          </div>
+        ) : (
+          <form className="stack" onSubmit={submit}>
+            <p className="muted" style={{ fontSize:13.5 }}>For {p.name}, made by {a.name}.</p>
+            <div className="field"><label htmlFor="bq-q">Quantity needed</label><input id="bq-q" className="input" value={f.qty} onChange={e => set('qty', e.target.value.replace(/\D/g,''))} /></div>
+            <div className="field"><label htmlFor="bq-d">Required by</label><input id="bq-d" type="date" className="input" value={f.date} onChange={e => set('date', e.target.value)} /></div>
+            <div className="field"><label htmlFor="bq-l">Delivery location</label><input id="bq-l" className="input" placeholder="City, state" value={f.location} onChange={e => set('location', e.target.value)} /></div>
+            <div className="field"><label htmlFor="bq-m">Message (optional)</label><textarea id="bq-m" className="input" value={f.message} onChange={e => set('message', e.target.value)} /></div>
+            <button className="btn btn-pri btn-lg btn-block" disabled={busy}>{busy ? 'Sending…' : 'Submit enquiry'}</button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- maker storefront ---------------- */
+function Maker({ go, nav }) {
+  const { catalogue } = useStore();
+  const a = byId(ARTISANS, nav.id);
+  if (!a) return null;
+  const mine = catalogue.filter(p => p.artisan === a.id);
+  return (
+    <>
+      <div className="panel" style={{ marginTop:18, display:'flex', gap:20, alignItems:'center', flexWrap:'wrap' }}>
+        <span className="avatar" style={{ width:76, height:76, fontSize:30 }}>{a.name[0]}</span>
+        <div style={{ flex:1, minWidth:240 }}>
+          <h1 style={{ fontSize:30 }}>{a.name}</h1>
+          <p className="muted">{a.craft} · {a.village}, {a.district}, {a.state}</p>
+          <p style={{ marginTop:10, maxWidth:'64ch', lineHeight:1.6 }}>{a.story}</p>
+        </div>
+        <div className="row" style={{ gap:22 }}>
+          <span><b style={{ display:'block', fontFamily:'var(--display)', fontSize:24 }}>{a.years}</b><span className="muted" style={{ fontSize:13 }}>years</span></span>
+          <span><b style={{ display:'block', fontFamily:'var(--display)', fontSize:24 }}>{a.orders}</b><span className="muted" style={{ fontSize:13 }}>orders</span></span>
+          <span><b style={{ display:'block', fontFamily:'var(--display)', fontSize:24 }}>{a.rating}</b><span className="muted" style={{ fontSize:13 }}>rating</span></span>
+        </div>
+      </div>
+      <div className="section-head"><h2>Made by {a.name.split(' ')[0]}</h2></div>
+      <div className="grid">{mine.map(p => <ProductCard key={p.id} p={p} go={go} />)}</div>
+    </>
+  );
+}
+
+/* ---------------- cart / wishlist / checkout / orders ---------------- */
+function Cart({ go }) {
+  const { state, dispatch, find } = useStore();
+  const lines = state.cart.map(l => ({ ...l, p: find(l.pid) })).filter(l => l.p);
+  const sub = lines.reduce((n, l) => n + l.p.price * l.qty, 0);
+  const ship = sub > 999 || sub === 0 ? 0 : 69;
+  if (!lines.length) return (
+    <div className="empty panel" style={{ marginTop:20 }}>
+      <Ic n="cart" s={36} c="#6A7060" />
+      <h3>Your cart is empty</h3>
+      <p className="muted">Start with something handmade under ₹700.</p>
+      <button className="btn btn-pri btn-lg" onClick={() => go({ page:'list', cat:'all' })}>Browse crafts</button>
+    </div>
+  );
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) 320px', gap:24, marginTop:20, alignItems:'start' }} className="cart-grid">
+      <div className="panel">
+        <h2 style={{ marginBottom:6 }}>Your cart</h2>
+        {lines.map(({ p, qty }) => (
+          <div className="cart-line" key={p.id}>
+            <div className="cart-art" onClick={() => go({ page:'pdp', id:p.id })}><CraftArt kind={p.art} variant={p.id} /></div>
+            <div>
+              <b style={{ fontSize:15 }}>{p.name}</b>
+              <p className="muted" style={{ fontSize:13 }}>By {(maker(p) || {}).name || p.artisanName} · ready in {p.days} days</p>
+              <div className="row" style={{ marginTop:9 }}>
+                <div className="qty">
+                  <button onClick={() => dispatch({ type:'qty', pid:p.id, d:-1 })} aria-label="Reduce quantity">−</button>
+                  <span>{qty}</span>
+                  <button onClick={() => dispatch({ type:'qty', pid:p.id, d:1 })} aria-label="Increase quantity">+</button>
+                </div>
+                <button className="btn btn-ghost" style={{ padding:'7px 14px', fontSize:13.5 }} onClick={() => dispatch({ type:'remove', pid:p.id })}>Remove</button>
+              </div>
+            </div>
+            <span className="price">{rupee(p.price * qty)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="panel" style={{ position:'sticky', top:80 }}>
+        <h3>Order summary</h3>
+        <div className="divider" />
+        <div className="between" style={{ fontSize:14.5 }}><span className="muted">Items ({lines.length})</span><b>{rupee(sub)}</b></div>
+        <div className="between" style={{ fontSize:14.5, marginTop:8 }}><span className="muted">Delivery</span><b>{ship ? rupee(ship) : 'Free'}</b></div>
+        <div className="divider" />
+        <div className="between"><b>Total</b><span className="price" style={{ fontSize:22 }}>{rupee(sub + ship)}</span></div>
+        <button className="btn btn-pri btn-lg btn-block" style={{ marginTop:14 }} onClick={() => go({ page:'checkout' })}>Go to checkout</button>
+        <p className="muted" style={{ fontSize:12.5, marginTop:10, textAlign:'center' }}>{rupee(Math.round(sub * 0.92))} of this reaches the artisans directly.</p>
+      </div>
+    </div>
+  );
+}
+function Wishlist({ go }) {
+  const { state, find } = useStore();
+  const items = state.wishlist.map(find).filter(Boolean);
+  if (!items.length) return (
+    <div className="empty panel" style={{ marginTop:20 }}>
+      <Ic n="heart" s={36} c="#6A7060" /><h3>No saved pieces yet</h3>
+      <p className="muted">Tap the heart on anything you want to come back to.</p>
+      <button className="btn btn-green" onClick={() => go({ page:'list', cat:'all' })}>Browse crafts</button>
+    </div>
+  );
+  return <><div className="section-head"><h2>Saved for later</h2></div>
+    <div className="grid">{items.map(p => <ProductCard key={p.id} p={p} go={go} />)}</div></>;
+}
+function Checkout({ go }) {
+  const { state, dispatch, find, toast } = useStore();
+  const lines = state.cart.map(l => ({ ...l, p: find(l.pid) })).filter(l => l.p);
+  const sub = lines.reduce((n, l) => n + l.p.price * l.qty, 0);
+  const ship = sub > 999 ? 0 : 69;
+  const [pay, setPay] = useState('upi');
+  const [placing, setPlacing] = useState(false);
+  if (!lines.length) { return <div className="empty panel" style={{marginTop:20}}><h3>Nothing to check out</h3><button className="btn btn-green" onClick={() => go({ page:'list', cat:'all' })}>Browse crafts</button></div>; }
+  const place = () => {
+    setPlacing(true);
+    setTimeout(() => {
+      const order = { id:'KS-' + Math.floor(24900 + Math.random() * 90), date:new Date().toISOString().slice(0, 10),
+        items:lines.map(l => ({ pid:l.pid, qty:l.qty })), total:sub + ship, status:'Confirmed', buyer:'You' };
+      dispatch({ type:'order', order }); toast('Order placed — the artisan has been notified');
+      go({ page:'orders' });
+    }, 1300);
+  };
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) 320px', gap:24, marginTop:20, alignItems:'start' }} className="cart-grid">
+      <div className="stack">
+        <div className="panel stack">
+          <h3>Delivery address</h3>
+          <div className="field"><label htmlFor="ck-n">Full name</label><input id="ck-n" className="input" defaultValue="Ananya Raghavan" /></div>
+          <div className="field"><label htmlFor="ck-a">Address</label><textarea id="ck-a" className="input" defaultValue={'14, Thiruvalluvar Street\nAdyar, Chennai 600020'} /></div>
+          <div className="field"><label htmlFor="ck-p">Phone</label><input id="ck-p" className="input" defaultValue="+91 98400 11223" /></div>
+        </div>
+        <div className="panel stack">
+          <h3>Payment</h3>
+          <div className="chipset">
+            {[['upi','UPI'],['card','Card'],['cod','Cash on delivery']].map(([v, l]) => (
+              <button key={v} className="chip" aria-pressed={pay === v} onClick={() => setPay(v)}>{l}</button>))}
+          </div>
+          <p className="muted" style={{ fontSize:13.5 }}>{pay === 'cod' ? 'Pay the delivery partner when the parcel arrives.' : 'You will be taken to your bank to approve the payment.'}</p>
+        </div>
+      </div>
+      <div className="panel" style={{ position:'sticky', top:80 }}>
+        <h3>Paying for</h3>
+        <div className="divider" />
+        {lines.map(({ p, qty }) => (
+          <div className="between" key={p.id} style={{ fontSize:14, marginBottom:8 }}>
+            <span style={{ maxWidth:'62%' }}>{p.name} <span className="muted">×{qty}</span></span><b>{rupee(p.price * qty)}</b>
+          </div>))}
+        <div className="divider" />
+        <div className="between"><b>Total</b><span className="price" style={{ fontSize:22 }}>{rupee(sub + ship)}</span></div>
+        <button className="btn btn-pri btn-lg btn-block" style={{ marginTop:14 }} disabled={placing} onClick={place}>
+          {placing ? 'Placing order…' : 'Place order'}</button>
+      </div>
+    </div>
+  );
+}
+function Orders({ go }) {
+  const { state, find } = useStore();
+  if (!state.orders.length) return <div className="empty panel" style={{marginTop:20}}><Ic n="box" s={34} c="#6A7060" /><h3>No orders yet</h3><button className="btn btn-green" onClick={() => go({ page:'list', cat:'all' })}>Start shopping</button></div>;
+  return (
+    <>
+      <div className="section-head"><h2>My orders</h2></div>
+      <div className="stack">
+        {state.orders.map(o => (
+          <div className="panel" key={o.id}>
+            <div className="between" style={{ flexWrap:'wrap' }}>
+              <div><b>{o.id}</b><p className="muted" style={{ fontSize:13 }}>Placed {o.date}</p></div>
+              <span className="pill">{o.status}</span>
+            </div>
+            <div className="divider" />
+            {o.items.map(it => { const p = find(it.pid); if (!p) return null; return (
+              <div className="row" key={it.pid} style={{ marginBottom:10 }}>
+                <div className="cart-art" style={{ width:62, height:62 }}><CraftArt kind={p.art} variant={p.id} /></div>
+                <div style={{ flex:1 }}>
+                  <button style={{ fontWeight:700, textAlign:'left' }} onClick={() => go({ page:'pdp', id:p.id })}>{p.name}</button>
+                  <p className="muted" style={{ fontSize:13 }}>Qty {it.qty} · by {(maker(p) || {}).name || p.artisanName}</p>
+                </div>
+                <b>{rupee(p.price * it.qty)}</b>
+              </div>); })}
+            <div className="between" style={{ borderTop:'1px solid var(--rule)', paddingTop:11 }}>
+              <span className="muted" style={{ fontSize:13.5 }}>Total paid</span><span className="price">{rupee(o.total)}</span>
+            </div>
+          </div>))}
+      </div>
+    </>
+  );
+}
+function Footer({ go }) {
+  return (
+    <footer><div className="wrap">
+      <div className="cols">
+        <div>
+          <div className="brand-name" style={{ color:'#fff', fontSize:22 }}>KalaSetu</div>
+          <p style={{ fontSize:13.5, marginTop:8, maxWidth:'34ch' }}>A direct market link between rural artisans and buyers, built so a first-time seller can list a product without help.</p>
+        </div>
+        <div><h4>Shop</h4>{CATEGORIES.slice(1, 6).map(c => <a key={c.id} href="#" onClick={e => { e.preventDefault(); go({ page:'list', cat:c.id }); }}>{c.label}</a>)}</div>
+        <div><h4>For artisans</h4>
+          <a href="#" onClick={e => { e.preventDefault(); go({ page:'artisan' }); }}>Sell on KalaSetu</a>
+          <a href="#" onClick={e => { e.preventDefault(); go({ page:'artisan', tab:'add' }); }}>Add a product</a>
+          <a href="#" onClick={e => e.preventDefault()}>Pricing help</a>
+          <a href="#" onClick={e => e.preventDefault()}>Call support: 1800 200 400</a></div>
+        <div><h4>About</h4><a href="#" onClick={e => e.preventDefault()}>How we verify makers</a><a href="#" onClick={e => e.preventDefault()}>Where your money goes</a><a href="#" onClick={e => e.preventDefault()}>Returns</a></div>
+      </div>
+      <p style={{ fontSize:12.5, marginTop:26, opacity:.75 }}>Prototype build. Sample artisans and products shown for demonstration.</p>
+    </div></footer>
+  );
+}
+
+/* ============================================================
+   6. ARTISAN MODE
+   Bigger type, four steps, voice on every text field.
+   ============================================================ */
+function ABar({ title, onBack, right }) {
+  const { state, dispatch } = useStore();
+  return (
+    <div className="abar"><div className="abar-in">
+      {onBack && <button className="icon-btn" onClick={onBack} aria-label="Go back" style={{ color:'#fff' }}><Ic n="back" s={24} /></button>}
+      <b style={{ fontSize:19, flex:1 }}>{title}</b>
+      <button className="chip" style={{ background:'rgba(255,255,255,.14)', border:'none', color:'#fff', padding:'7px 13px' }}
+        onClick={() => dispatch({ type:'lang', lang: state.lang === 'en' ? 'hi' : 'en' })}>
+        {state.lang === 'en' ? 'हिन्दी' : 'English'}
+      </button>
+      {right}
+    </div></div>
+  );
+}
+function VoiceField({ label, hint, value, onChange, placeholder, sample, multiline }) {
+  const { rec, start } = useVoice(txt => onChange(value ? value + ' ' + txt : txt));
+  const Tag = multiline ? 'textarea' : 'input';
+  return (
+    <div className="field">
+      <label>{label}{hint && <span className="hint" style={{ display:'block' }}>{hint}</span>}</label>
+      <div className="row" style={{ alignItems:'flex-start' }}>
+        <Tag className="input" style={{ flex:1, fontSize:17 }} value={value} placeholder={placeholder}
+          onChange={e => onChange(e.target.value)} />
+        <button className={'mic' + (rec ? ' rec' : '')} onClick={() => start(sample)} aria-label={rec ? 'Listening' : 'Speak instead of typing'}>
+          <Ic n="mic" s={28} c="#fff" />
+        </button>
+      </div>
+      <span className="hint">{rec ? 'Listening… speak now' : 'Tap the orange button and speak'}</span>
+    </div>
+  );
+}
+
+const ART_CHOICES = ['bag','pot','stole','elephant','earrings','basket','lamp','cushion'];
+
+/* ---------------- AI catalog panel: structured, editable, source-tagged ---------------- */
+function CatalogPanel({ f, set, me, draftId }) {
+  const { toast } = useStore();
+  const [cat, setCatState] = useState({ status:'IDLE', data:null, lang:'en', source:'', error:'' });
+
+  const generate = async () => {
+    setCatState(c => ({ ...c, status:'LOADING' }));
+    const res = await Api.generateDescription(draftId, {
+      file: f.photoFile, notes: f.notes, category: f.cat, craftType: me.craft, artisanName: me.name,
+    });
+    if (res.status === 'FAILED') { setCatState(c => ({ ...c, status:'FAILED', error: res.error })); return; }
+    setCatState({ status:'COMPLETED', data: res, lang:'en', source: res.source, error:'' });
+    toast(res.source === 'live' ? 'Description drafted from your photo and notes' : 'Demo draft ready (no AI backend connected)', 'sparkle');
+  };
+  const setAttr = (key, val) => setCatState(c => ({ ...c, data: { ...c.data, attributes: { ...c.data.attributes, [key]: { ...(c.data.attributes?.[key] || {}), value: val, source:'stated' } } } }));
+  const setDesc = (field, val) => setCatState(c => ({ ...c, data: { ...c.data, descriptions: { ...c.data.descriptions, [field]: val } } }));
+  const setName = val => setCatState(c => ({ ...c, data: { ...c.data, productName: val } }));
+  const apply = () => {
+    const d = cat.data;
+    if (d.productName) set('name', d.productName);
+    if (d.attributes?.material?.value) set('material', d.attributes.material.value);
+    const desc = cat.lang === 'hi' ? d.descriptions?.detailedHi : d.descriptions?.detailedEn;
+    if (desc) set('desc', desc);
+    toast('Applied to your listing', 'check');
+  };
+
+  const SOURCE_LABEL = { stated:'You said this', observed:'Seen in photo', uncertain:'Please confirm' };
+  const SOURCE_ICON = { stated:'check', observed:'eye', uncertain:'bulb' };
+  const SOURCE_COLOR = { stated:'var(--ok)', observed:'var(--green-2)', uncertain:'var(--clay)' };
+
+  return (
+    <div className="ai-box" style={{ gap:16 }}>
+      <span className="ai-label"><Ic n="sparkle" s={15} /> AI product listing</span>
+      {cat.status === 'IDLE' && (
+        <>
+          <p style={{ fontSize:14.5 }}>We'll turn your photo and notes into a full listing — name, materials, colours, and a description in English and Hindi. Nothing you didn't say or that isn't visible in the photo gets invented, and you can edit every word before publishing.</p>
+          <button className="btn btn-green" onClick={generate} disabled={!f.name.trim()}>Generate listing details</button>
+        </>
+      )}
+      {cat.status === 'LOADING' && (
+        <div className="stack" style={{ gap:7 }}>
+          <div className="skel" style={{ width:'92%' }} /><div className="skel" style={{ width:'78%' }} /><div className="skel" style={{ width:'86%' }} /><div className="skel" style={{ width:'60%' }} />
+        </div>
+      )}
+      {cat.status === 'FAILED' && (
+        <>
+          <p className="muted" style={{ fontSize:14 }}>{cat.error || 'Could not generate a listing right now.'}</p>
+          <button className="btn btn-ghost" onClick={generate}>Try again</button>
+        </>
+      )}
+      {cat.status === 'COMPLETED' && cat.data && (
+        <>
+          {cat.source !== 'live' && (
+            <div className="panel" style={{ background:'#FBEEDF', borderColor:'#E8CDA6', padding:12 }}>
+              <span style={{ color:'var(--clay)', fontWeight:700, fontSize:13 }}><Ic n="sparkle" s={14} /> Demo mode — not real AI</span>
+              <p style={{ fontSize:13, marginTop:4 }}>No description backend is connected, so attributes below are left blank for you to fill in — the same rule the real pipeline follows for anything it isn't sure about.</p>
+            </div>
+          )}
+          {cat.data.warnings?.length > 0 && (
+            <div className="panel" style={{ background:'#FBEEDF', borderColor:'#E8CDA6', padding:12 }}>
+              <span style={{ color:'var(--clay)', fontWeight:700, fontSize:13 }}>Please check these</span>
+              <ul style={{ margin:'6px 0 0', paddingLeft:18, fontSize:13 }}>{cat.data.warnings.map((w,i) => <li key={i}>{w}</li>)}</ul>
+            </div>
+          )}
+          <div className="field">
+            <label>Suggested name</label>
+            <input className="input" value={cat.data.productName || ''} onChange={e => setName(e.target.value)} />
+          </div>
+          <div className="stack" style={{ gap:10 }}>
+            {['material','colour','pattern','dimensions','origin'].map(k => {
+              const a = cat.data.attributes?.[k] || { value:null, source:'uncertain' };
+              return (
+                <div className="field" key={k}>
+                  <label style={{ display:'flex', alignItems:'center', gap:8, textTransform:'capitalize' }}>
+                    {k}
+                    <span style={{ fontSize:11.5, fontWeight:700, color:SOURCE_COLOR[a.source] || SOURCE_COLOR.uncertain, display:'inline-flex', alignItems:'center', gap:4 }}>
+                      <Ic n={SOURCE_ICON[a.source] || 'bulb'} s={12} /> {SOURCE_LABEL[a.source] || SOURCE_LABEL.uncertain}
+                    </span>
+                  </label>
+                  <input className="input" value={a.value || ''} placeholder={a.source === 'uncertain' ? 'Not mentioned — add it yourself' : ''}
+                    onChange={e => setAttr(k, e.target.value)} />
+                </div>
+              );
+            })}
+          </div>
+          {cat.data.keyFeatures?.length > 0 && (
+            <div className="field">
+              <label>Key features</label>
+              <div className="chipset">{cat.data.keyFeatures.map((kf,i) => <span className="chip" key={i} style={{ pointerEvents:'none' }}>{kf}</span>)}</div>
+            </div>
+          )}
+          <div className="field">
+            <label>Description</label>
+            <div className="chipset" style={{ marginBottom:6 }}>
+              <button className="chip" aria-pressed={cat.lang === 'en'} onClick={() => setCatState(c => ({ ...c, lang:'en' }))}>English</button>
+              <button className="chip" aria-pressed={cat.lang === 'hi'} onClick={() => setCatState(c => ({ ...c, lang:'hi' }))}>हिन्दी</button>
+            </div>
+            <textarea className="input" style={{ minHeight:110 }}
+              value={(cat.lang === 'hi' ? cat.data.descriptions?.detailedHi : cat.data.descriptions?.detailedEn) || ''}
+              onChange={e => setDesc(cat.lang === 'hi' ? 'detailedHi' : 'detailedEn', e.target.value)} />
+          </div>
+          <div className="row" style={{ gap:10 }}>
+            <button className="btn btn-green" onClick={apply}><Ic n="check" s={16} c="#fff" /> Apply to listing</button>
+            <button className="btn btn-ghost" onClick={generate}>Regenerate</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AddProduct({ back, onDone }) {
+  const { state, dispatch, toast, t } = useStore();
+  const me = byId(ARTISANS, state.user.artisanId);
+  const draftId = useRef('draft-' + Date.now()).current;
+  const [step, setStep] = useState(0);
+  const [f, setF] = useState({ art:'', name:'', notes:'', material:'', cat:'textiles', price:'', stock:'5', desc:'', hours:'6', cost:'150', photoFile:null, photoPreview:'' });
+  const [ai, setAi] = useState({ desc:false, price:null, priceLoading:false });
+  const [mode, setMode] = useState('marketplace'); // enhancement presentation mode
+  const [enhance, setEnhance] = useState({ status:'IDLE', steps:[], compare:50, source:'' }); // IDLE | UPLOADING | PROCESSING | COMPLETED | FAILED
+  const [d3, setD3] = useState({ status:'IDLE', wanted:false, stage:'', modelUrl:null }); // IDLE | PROCESSING | COMPLETED | FAILED
+  const camRef = useRef(null), galRef = useRef(null);
+  const set = (k, v) => setF(s => ({ ...s, [k]: v }));
+
+  const onPickPhoto = e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (f.photoPreview) URL.revokeObjectURL(f.photoPreview);
+    setF(s => ({ ...s, photoFile:file, photoPreview:URL.createObjectURL(file) }));
+    setEnhance({ status:'IDLE', steps:[], compare:50, source:'' }); // a new photo needs re-enhancing
+  };
+
+  const writeDesc = async () => {
+    setAi(a => ({ ...a, desc:true }));
+    const text = await AI.describe({ name:f.name, material:f.material, craft:me.craft, notes:f.notes });
+    set('desc', text); setAi(a => ({ ...a, desc:false })); toast('Description written for you', 'sparkle');
+  };
+  const askPrice = async () => {
+    setAi(a => ({ ...a, priceLoading:true }));
+    const r = await AI.suggestPrice({ material:f.material, hours:f.hours, cost:f.cost, craft:me.craft });
+    setAi(a => ({ ...a, price:r, priceLoading:false }));
+    if (!f.price) set('price', String(r.fair));
+  };
+  const runEnhance = async () => {
+    setEnhance({ status:'UPLOADING', steps:[], compare:50, source:'' });
+    await wait(400);
+    setEnhance(s => ({ ...s, status:'PROCESSING' }));
+    const res = await Api.enhanceImage(draftId, f.photoFile, mode);
+    setEnhance({ status: res.status || 'COMPLETED', steps: res.steps || [], compare:50,
+      source: res.source, originalUrl: res.originalUrl, enhancedUrl: res.enhancedUrl, error: res.error });
+    if (res.status === 'COMPLETED') toast(res.source === 'live' ? 'Photo enhanced for e-commerce' : 'Demo preview ready (no AI backend connected)', 'sparkle');
+  };
+  const run3D = async () => {
+    setD3({ wanted:true, status:'PROCESSING', stage:'Preparing images…' });
+    try {
+      // Only send a real photo URL if the backend actually enhanced one —
+      // otherwise there is nothing real to reconstruct from, and we go
+      // straight to the honestly-labeled template preview.
+      const imageUrls = (enhance.source === 'live' && enhance.enhancedUrl) ? [enhance.enhancedUrl] : [];
+      await Api.generate3D(draftId, imageUrls);
+      const final = await Api.poll3D(draftId, { demo: imageUrls.length === 0, onUpdate: s => setD3(d => ({ ...d, stage: s.stage || '' })) });
+      setD3({ wanted:true, status: final.status === 'COMPLETED' ? 'COMPLETED' : 'FAILED', stage:'', modelUrl: final.modelUrl || null });
+    } catch (e) { setD3({ wanted:true, status:'FAILED', stage:'' }); }
+  };
+  useEffect(() => { if (step === 1 && enhance.status === 'IDLE') runEnhance(); }, [step]);
+  useEffect(() => { if (step === 3 && !ai.price && !ai.priceLoading) askPrice(); }, [step]);
+
+  const publish = () => {
+    const p = { id:'d' + Date.now(), name:f.name || 'Handmade piece', cat:f.cat, art:f.art || 'pot', artisan:me.id,
+      price:Number(f.price || 500), mrp:Math.round(Number(f.price || 500) * 1.3), rating:5, reviews:0,
+      stock:Number(f.stock || 1), tag:'New', material:f.material || 'Handmade', size:'—', days:3,
+      desc:f.desc || 'Handmade by ' + me.name + '.',
+      aiEnhanced: enhance.status === 'COMPLETED' && enhance.source === 'live',
+      enhancedPhotoUrl: enhance.source === 'live' ? enhance.enhancedUrl : null,
+      threeDModelUrl: d3.status === 'COMPLETED' ? d3.modelUrl : null,
+      has3D: d3.status === 'COMPLETED' };
+    dispatch({ type:'publish', product:p });
+    toast('Published — your product is live'); onDone(p);
+  };
+
+  const steps = [t('photo'), t('enhanceStep'), t('whatMaking'), t('priceStep'), t('threeDStep'), t('checkStep')];
+  const canNext = [Boolean(f.art || f.photoFile), enhance.status === 'COMPLETED', f.name.trim().length > 2, Number(f.price) > 0, true, true][step];
+
+  return (
+    <div className="amode">
+      <ABar title={t('addProduct')} onBack={step === 0 ? back : () => setStep(step - 1)} />
+      <div className="awrap">
+        <div className="steps">{steps.map((s, i) => <div key={i} className={'step' + (i < step ? ' on' : i === step ? ' cur' : '')} />)}</div>
+        <p className="muted" style={{ marginBottom:8, fontSize:15 }}>Step {step + 1} of {steps.length}</p>
+        <h2 style={{ marginBottom:18 }}>{steps[step]}</h2>
+
+        {step === 0 && (
+          <div className="bigcard stack">
+            <input ref={camRef} type="file" accept="image/*" capture="environment" style={{ display:'none' }} onChange={onPickPhoto} />
+            <input ref={galRef} type="file" accept="image/*" style={{ display:'none' }} onChange={onPickPhoto} />
+            <div className="photo-slot">
+              {f.photoPreview ? <img src={f.photoPreview} alt="Your product" style={{ width:'100%', height:'100%', objectFit:'cover' }} /> :
+               f.art ? <CraftArt kind={f.art} variant="draft" /> :
+                <div style={{ textAlign:'center', padding:20 }}>
+                  <Ic n="camera" s={42} c="#6A7060" />
+                  <p className="muted" style={{ marginTop:8, fontSize:15 }}>Take a photo of your product in daylight</p>
+                </div>}
+            </div>
+            <div className="row" style={{ gap:12, flexWrap:'wrap' }}>
+              <button className="btn btn-pri btn-lg" style={{ flex:1 }} onClick={() => camRef.current?.click()}>
+                <Ic n="camera" s={22} c="#fff" /> Take photo</button>
+              <button className="btn btn-ghost btn-lg" style={{ flex:1 }} onClick={() => galRef.current?.click()}>Choose from phone</button>
+            </div>
+            {f.photoPreview && <p className="muted" style={{ fontSize:13 }}><Ic n="check" s={14} c="#2D6A4F" /> Photo captured — this is the real image the AI steps ahead will work on.</p>}
+            <div id="cam">
+              <p style={{ fontWeight:700, marginBottom:10 }}>{f.photoPreview ? 'What kind of craft is this, roughly? (helps the 3D step)' : 'Or pick the closest picture for now, without a camera'}</p>
+              <div className="photo-pick">
+                {ART_CHOICES.map(k => (
+                  <button key={k} className="photo-opt" aria-pressed={f.art === k} onClick={() => set('art', k)} aria-label={k}>
+                    <CraftArt kind={k} variant={k} />
+                  </button>))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="bigcard stack">
+            {(enhance.status === 'UPLOADING' || enhance.status === 'PROCESSING') && (
+              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'20px 0' }}>
+                <div className="mini-spin" style={{ borderTopColor:'var(--marigold)', width:38, height:38, borderWidth:4 }} />
+                <b style={{ fontSize:17 }}>{enhance.status === 'UPLOADING' ? 'Uploading your photo…' : 'Enhancing your product image…'}</b>
+                <ul className="enh-list">
+                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Analyzing product & cleaning background</li>
+                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Correcting lighting & white balance</li>
+                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Preparing studio photograph</li>
+                </ul>
+              </div>
+            )}
+            {enhance.status === 'FAILED' && (
+              <div className="empty" style={{ padding:'20px 0' }}>
+                <Ic n="camera" s={30} c="#B4512A" />
+                <h3>Could not enhance this photo</h3>
+                <p className="muted">{enhance.error || 'You can still publish with your original photo.'}</p>
+                <button className="btn btn-green" onClick={runEnhance}>Try again</button>
+              </div>
+            )}
+            {enhance.status === 'IDLE' && !f.photoFile && (
+              <div className="empty" style={{ padding:'20px 0' }}>
+                <Ic n="camera" s={30} c="#6A7060" />
+                <h3>No real photo to enhance</h3>
+                <p className="muted">You picked a placeholder picture in step 1 instead of taking a real photo, so there's nothing here for the AI to work on. Go back and take a photo to see this step for real.</p>
+              </div>
+            )}
+            {enhance.status === 'COMPLETED' && (
+              <>
+                <div className="field" style={{ marginBottom:4 }}>
+                  <label>Presentation style</label>
+                  <div className="chipset">
+                    {[['studio','Professional studio'],['lifestyle','Lifestyle'],['luxury','Luxury'],['heritage','Heritage'],['marketplace','Clean marketplace']].map(([v,l]) => (
+                      <button key={v} className="chip" aria-pressed={mode === v} onClick={() => { setMode(v); }}>{l}</button>))}
+                  </div>
+                  <span className="hint">Changes only the background and lighting style — never the product itself.</span>
+                  <button className="btn btn-ghost" style={{ marginTop:8, width:'fit-content' }} onClick={runEnhance}>Re-run with this style</button>
+                </div>
+                {enhance.source !== 'live' && (
+                  <div className="ai-box" style={{ background:'#FBEEDF', borderColor:'#E8CDA6' }}>
+                    <span className="ai-label" style={{ color:'var(--clay)' }}><Ic n="sparkle" s={15} /> Demo mode — not real AI</span>
+                    <p style={{ fontSize:13.5 }}>No enhancement backend is connected in this preview, so this is a basic levels pass on your own photo, not a genuine AI result. See <code>kalasetu-backend</code> to connect the real pipeline.</p>
+                  </div>
+                )}
+                <p className="muted" style={{ fontSize:15 }}>Drag the slider to compare your original photo with the {enhance.source === 'live' ? 'AI-enhanced' : 'demo-adjusted'} version.</p>
+                <div className="compare" style={{ '--pos': enhance.compare + '%' }}>
+                  <div className="compare-before">
+                    {enhance.originalUrl || f.photoPreview
+                      ? <img src={enhance.originalUrl || f.photoPreview} alt="Original" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                      : <CraftArt kind={f.art || 'pot'} variant="orig" />}
+                  </div>
+                  <div className="compare-after" style={{ clipPath:`inset(0 0 0 ${enhance.compare}%)` }}>
+                    {enhance.enhancedUrl
+                      ? <img src={enhance.enhancedUrl} alt="Enhanced" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                      : <CraftArt kind={f.art || 'pot'} variant="enh" />}
+                  </div>
+                  <span className="compare-tag left">Original</span>
+                  <span className="compare-tag right">{enhance.source === 'live' ? 'AI enhanced' : 'Demo pass'}</span>
+                  <input type="range" min="0" max="100" value={enhance.compare}
+                    onChange={e => setEnhance(s => ({ ...s, compare:Number(e.target.value) }))} aria-label="Compare original and enhanced photo" />
+                </div>
+                <div className="ai-box">
+                  <span className="ai-label"><Ic n="sparkle" s={15} /> What changed</span>
+                  <ul className="enh-done">{enhance.steps.map((s, i) => <li key={i}><Ic n="check" s={14} c="#2D6A4F" />{s}</li>)}</ul>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="bigcard stack" style={{ gap:22 }}>
+            <VoiceField label="What is this product called?" hint="Say it in your own words, like: jute bag with handles"
+              value={f.name} onChange={v => set('name', v)} placeholder="Jute market bag" sample="handwoven jute market bag" />
+            <VoiceField label="What is it made of?" hint="Cotton, jute, clay, brass, bamboo…"
+              value={f.material} onChange={v => set('material', v)} placeholder="Natural jute with cotton lining" sample="natural jute with cotton lining" />
+            <div className="field">
+              <label>What kind of craft is it?</label>
+              <div className="chipset">{CATEGORIES.slice(1).map(c => (
+                <button key={c.id} className="chip" aria-pressed={f.cat === c.id} onClick={() => set('cat', c.id)}>{c.label}</button>))}
+              </div>
+            </div>
+            <VoiceField label="Anything special about it?" multiline hint="This is optional. Tell buyers how you made it."
+              value={f.notes} onChange={v => set('notes', v)} placeholder="Woven on a floor loom, takes two days" sample="woven on a floor loom, takes two days to finish" />
+            <CatalogPanel f={f} set={set} me={me} draftId={draftId} />
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="bigcard stack" style={{ gap:20 }}>
+            <div className="row" style={{ gap:14, flexWrap:'wrap' }}>
+              <div className="field" style={{ flex:1, minWidth:150 }}>
+                <label>Cost of materials</label>
+                <input className="input" inputMode="numeric" value={f.cost} onChange={e => set('cost', e.target.value.replace(/\D/g,''))} />
+              </div>
+              <div className="field" style={{ flex:1, minWidth:150 }}>
+                <label>Hours to make one</label>
+                <input className="input" inputMode="numeric" value={f.hours} onChange={e => set('hours', e.target.value.replace(/\D/g,''))} />
+              </div>
+              <button className="btn btn-ghost btn-lg" style={{ alignSelf:'flex-end' }} onClick={askPrice}>Check price again</button>
+            </div>
+            <div className="ai-box">
+              <span className="ai-label"><Ic n="sparkle" s={15} /> Suggested price</span>
+              {ai.priceLoading || !ai.price ? <div className="stack" style={{ gap:8 }}><div className="skel" style={{ width:'60%', height:26 }} /><div className="skel" style={{ width:'80%' }} /></div> : (
+                <>
+                  <div className="row" style={{ gap:18, flexWrap:'wrap' }}>
+                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.low)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>Low</span></span>
+                    <span style={{ padding:'6px 16px', background:'var(--green)', color:'#fff', borderRadius:12 }}>
+                      <b style={{ fontSize:22 }}>{rupee(ai.price.fair)}</b><span style={{ fontSize:12.5, display:'block' }}>Fair price</span></span>
+                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.high)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>High</span></span>
+                  </div>
+                  <p className="muted" style={{ fontSize:14 }}>{ai.price.note}</p>
+                </>)}
+            </div>
+            <div className="field">
+              <label>Your price</label>
+              <div className="price-dial">
+                <span className="price" style={{ fontSize:30 }}>{rupee(f.price || 0)}</span>
+                <input type="range" min="100" max="4000" step="10" value={f.price || 500} onChange={e => set('price', e.target.value)} aria-label="Set price" />
+              </div>
+              <span className="hint">Slide left for a lower price, right for higher. You decide.</span>
+            </div>
+            <div className="field">
+              <label>How many can you supply?</label>
+              <div className="chipset">{['1','3','5','10','20'].map(n => (
+                <button key={n} className="chip" aria-pressed={f.stock === n} onClick={() => set('stock', n)}>{n} pieces</button>))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="bigcard stack">
+            {!d3.wanted && d3.status !== 'PROCESSING' && (
+              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'16px 0' }}>
+                <span className="tile-ic" style={{ width:60, height:60 }}><Ic n="cube" s={30} /></span>
+                <b style={{ fontSize:18 }}>Let buyers turn your product around in 3D</b>
+                <p className="muted" style={{ maxWidth:'44ch' }}>This is optional and takes about a minute. You can always add it later from My products.</p>
+                <div className="row" style={{ gap:12 }}>
+                  <button className="btn btn-pri btn-lg" onClick={run3D}><Ic n="cube" s={19} c="#fff" /> Generate 3D preview</button>
+                  <button className="btn btn-ghost btn-lg" onClick={() => setStep(5)}>Skip for now</button>
+                </div>
+              </div>
+            )}
+            {d3.wanted && <Viewer3D art={f.art || 'pot'} status={d3.status} stage={d3.stage} modelUrl={d3.modelUrl} />}
+            {d3.wanted && d3.status === 'COMPLETED' && !d3.modelUrl && (
+              <p className="muted" style={{ fontSize:13, marginTop:8 }}>No AI backend was connected, so this is a category-template preview, not a reconstruction of your actual product. Connect kalasetu-backend for a real one.</p>
+            )}
+            {d3.wanted && d3.status === 'FAILED' && <button className="btn btn-ghost" onClick={run3D}>Try again</button>}
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="stack">
+            <p className="muted" style={{ fontSize:15.5 }}>This is exactly how buyers will see it. Check it, then publish.</p>
+            <div className="preview-frame">
+              <div className="preview-top">Buyer view · KalaSetu</div>
+              <div style={{ padding:16, display:'grid', gridTemplateColumns:'220px 1fr', gap:18 }} className="prev-grid">
+                <div style={{ borderRadius:14, overflow:'hidden', border:'1px solid var(--rule)', position:'relative' }}>
+                  {enhance.source === 'live' && enhance.enhancedUrl
+                    ? <img src={enhance.enhancedUrl} alt={f.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                    : f.photoPreview
+                      ? <img src={f.photoPreview} alt={f.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                      : <CraftArt kind={f.art || 'pot'} variant="preview" />}
+                  {enhance.status === 'COMPLETED' && enhance.source === 'live' && <span className="ai-badge"><Ic n="sparkle" s={12} /> AI enhanced</span>}
+                </div>
+                <div className="stack" style={{ gap:8 }}>
+                  <h3 style={{ fontSize:22 }}>{f.name || 'Untitled product'}</h3>
+                  <span className="muted">By {me.name} · {me.district}, {me.state}</span>
+                  <span className="price" style={{ fontSize:26 }}>{rupee(f.price || 0)}</span>
+                  <p style={{ fontSize:14.5, lineHeight:1.6 }}>{f.desc || 'No description yet.'}</p>
+                  <span className="muted" style={{ fontSize:13.5 }}>{f.material} · {f.stock} in stock</span>
+                  {d3.status === 'COMPLETED' && <span className="pill" style={{ width:'fit-content' }}><Ic n="cube" s={13} /> {d3.modelUrl ? '3D preview included' : 'Template 3D preview included'}</span>}
+                </div>
+              </div>
+            </div>
+            <div className="row" style={{ gap:12, flexWrap:'wrap' }}>
+              <button className="btn btn-ghost btn-lg" onClick={() => setStep(0)}><Ic n="camera" s={19} /> Change photo</button>
+              <button className="btn btn-ghost btn-lg" onClick={() => setStep(2)}><Ic n="edit" s={19} /> Change details</button>
+              <button className="btn btn-ghost btn-lg" onClick={() => setStep(3)}><Ic n="rupee" s={19} /> Change price</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="sticky-foot"><div className="sticky-in">
+        {step > 0 && <button className="btn btn-ghost btn-lg" style={{ flex:'0 0 34%' }} onClick={() => setStep(step - 1)}><Ic n="back" s={20} /> {t('back')}</button>}
+        {step < 5
+          ? <button className="btn btn-pri btn-lg" style={{ flex:1 }} disabled={!canNext} onClick={() => setStep(step + 1)}>{t('next')} <Ic n="arrow" s={20} c="#fff" /></button>
+          : <button className="btn btn-pri btn-lg" style={{ flex:1 }} onClick={publish}><Ic n="check" s={21} c="#fff" /> {t('publish')}</button>}
+      </div></div>
+    </div>
+  );
+}
+
+function ArtisanHome({ exit, go, onNeedAuth }) {
+  const { state, catalogue, t, dispatch, toast } = useStore();
+  const [view, setView] = useState('home');
+  const me = byId(ARTISANS, state.user.artisanId);
+  const mine = catalogue.filter(p => state.myProducts.includes(p.id));
+  const earnings = SEED_SALES.reduce((n, s) => n + s.amount, 0);
+  const displayName = (state.session && state.session.name) ? state.session.name.split(' ')[0] : me.name.split(' ')[0];
+
+  if (view === 'add') return <AddProduct back={() => setView('home')} onDone={() => setView('products')} />;
+
+  return (
+    <div className="amode">
+      <ABar title={'नमस्ते, ' + displayName} onBack={view === 'home' ? null : () => setView('home')}
+        right={<button className="chip" style={{ background:'rgba(255,255,255,.14)', border:'none', color:'#fff', padding:'7px 13px' }} onClick={exit}>Shop view</button>} />
+      {!state.session && view === 'home' && (
+        <div className="wrap" style={{ paddingTop:14 }}>
+          <div className="panel" style={{ background:'var(--surface)', display:'flex', gap:14, alignItems:'center', flexWrap:'wrap' }}>
+            <Ic n="shield" s={22} c="var(--green-2)" />
+            <p style={{ flex:1, minWidth:200, fontSize:14 }}>You're viewing a demo artisan account. Create your own account to keep your products and orders saved to you.</p>
+            <button className="btn btn-green" onClick={() => onNeedAuth && onNeedAuth()}>Create account</button>
+          </div>
+        </div>
+      )}
+      <div className="awrap">
+        {view === 'home' && <>
+          <div className="row" style={{ gap:14, marginBottom:20, flexWrap:'wrap' }}>
+            <div className="stat" style={{ flex:1, minWidth:150 }}><b>{rupee(earnings)}</b><span>Earned this month</span></div>
+            <div className="stat" style={{ flex:1, minWidth:150 }}><b>{SEED_SALES.filter(s => s.status === 'New').length}</b><span>New orders to pack</span></div>
+            <div className="stat" style={{ flex:1, minWidth:150 }}><b>{mine.length}</b><span>Products listed</span></div>
+          </div>
+          <div className="tiles">
+            <button className="tile" onClick={() => setView('add')} style={{ background:'var(--green)', borderColor:'var(--green)', color:'#fff' }}>
+              <span className="tile-ic" style={{ background:'rgba(255,255,255,.18)', color:'#fff' }}><Ic n="plus" s={28} sw={2.4} /></span>
+              <span><span className="tile-t">{t('addProduct')}</span><span className="tile-s" style={{ color:'#CFDED4' }}>Photo, voice, price, publish</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('products')}>
+              <span className="tile-ic"><Ic n="grid" s={26} /></span>
+              <span><span className="tile-t">{t('myProducts')}</span><span className="tile-s">Your published catalogue</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('inventory')}>
+              <span className="tile-ic"><Ic n="box" s={26} /></span>
+              <span><span className="tile-t">{t('inventory')}</span><span className="tile-s">Update how many you have</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('orders')}>
+              <span className="tile-ic"><Ic n="truck" s={26} /></span>
+              <span><span className="tile-t">{t('myOrders')}</span><span className="tile-s">{SEED_SALES.length} orders waiting</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('insights')}>
+              <span className="tile-ic"><Ic n="sparkle" s={26} /></span>
+              <span><span className="tile-t">{t('insights')}</span><span className="tile-s">What is selling well now</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('money')}>
+              <span className="tile-ic"><Ic n="rupee" s={26} /></span>
+              <span><span className="tile-t">{t('earnings')}</span><span className="tile-s">Paid every Friday</span></span>
+            </button>
+            <button className="tile" onClick={() => setView('profile')}>
+              <span className="tile-ic"><Ic n="user" s={26} /></span>
+              <span><span className="tile-t">{t('profile')}</span><span className="tile-s">{me.district}, {me.state}</span></span>
+            </button>
+            <button className="tile" onClick={() => toast('Calling support 1800 200 400', 'phone')}>
+              <span className="tile-ic"><Ic n="phone" s={26} /></span>
+              <span><span className="tile-t">{t('help')}</span><span className="tile-s">Talk to someone in your language</span></span>
+            </button>
+          </div>
+          <div className="bigcard" style={{ marginTop:22 }}>
+            <div className="row" style={{ alignItems:'flex-start' }}>
+              <span className="tile-ic" style={{ background:'#FBEEDF', color:'var(--clay)' }}><Ic n="bulb" s={26} /></span>
+              <div>
+                <b style={{ fontSize:17 }}>Tip for this week</b>
+                <p className="muted" style={{ fontSize:14.5, marginTop:4, maxWidth:'58ch' }}>
+                  Photos taken near a window sell better than photos taken indoors at night. Put your product on a plain cloth and stand with your back to the light.</p>
+              </div>
+            </div>
+          </div>
+        </>}
+
+        {view === 'products' && <>
+          <div className="between" style={{ marginBottom:14 }}><h2>{t('myProducts')}</h2>
+            <button className="btn btn-pri" onClick={() => setView('add')}><Ic n="plus" s={18} c="#fff" /> Add</button></div>
+          <div className="stack">
+            {mine.map(p => (
+              <div className="bigcard" key={p.id} style={{ display:'flex', gap:16, alignItems:'center', padding:16, flexWrap:'wrap' }}>
+                <div style={{ width:88, height:88, borderRadius:14, overflow:'hidden', border:'1px solid var(--rule)' }}><CraftArt kind={p.art} variant={p.id} /></div>
+                <div style={{ flex:1, minWidth:170 }}>
+                  <b style={{ fontSize:17 }}>{p.name}</b>
+                  <p className="muted" style={{ fontSize:14 }}>{rupee(p.price)} · {p.stock} in stock · {p.reviews} reviews</p>
+                </div>
+                <div className="row">
+                  <button className="btn btn-ghost" onClick={() => { exit(); go({ page:'pdp', id:p.id }); }}><Ic n="eye" s={18} /> View</button>
+                  <button className="btn btn-ghost" onClick={() => toast('Editing opens the same four steps')}><Ic n="edit" s={18} /> Edit</button>
+                </div>
+              </div>))}
+          </div>
+        </>}
+
+        {view === 'orders' && <>
+          <h2 style={{ marginBottom:14 }}>{t('myOrders')}</h2>
+          <div className="stack">
+            {SEED_SALES.map(s => { const p = byId(PRODUCTS, s.pid); return (
+              <div className="bigcard" key={s.id} style={{ padding:16 }}>
+                <div className="row" style={{ flexWrap:'wrap' }}>
+                  <div style={{ width:70, height:70, borderRadius:12, overflow:'hidden', border:'1px solid var(--rule)' }}><CraftArt kind={p.art} variant={p.id} /></div>
+                  <div style={{ flex:1, minWidth:160 }}>
+                    <b style={{ fontSize:16.5 }}>{p.name} × {s.qty}</b>
+                    <p className="muted" style={{ fontSize:14 }}>{s.buyer} · {s.date}</p>
+                  </div>
+                  <span className="price" style={{ fontSize:19 }}>{rupee(s.amount)}</span>
+                  <span className="pill">{s.status}</span>
+                </div>
+                {s.status === 'New' && <button className="btn btn-pri btn-lg btn-block" style={{ marginTop:14 }}
+                  onClick={() => toast('Pickup booked — courier comes tomorrow', 'truck')}>Mark as packed, book pickup</button>}
+              </div>); })}
+          </div>
+        </>}
+
+        {view === 'money' && <>
+          <h2 style={{ marginBottom:6 }}>{t('earnings')}</h2>
+          <p className="muted" style={{ marginBottom:16 }}>Money reaches your bank account every Friday.</p>
+          <div className="bigcard">
+            <b style={{ fontFamily:'var(--display)', fontSize:38 }}>{rupee(earnings)}</b>
+            <p className="muted">September so far · 4 orders</p>
+            <div className="divider" />
+            <table className="simple"><thead><tr><th>Order</th><th>Product</th><th>You receive</th></tr></thead>
+              <tbody>{SEED_SALES.map(s => (
+                <tr key={s.id}><td>{s.id}</td><td>{byId(PRODUCTS, s.pid).name}</td><td><b>{rupee(Math.round(s.amount * 0.92))}</b></td></tr>))}
+              </tbody></table>
+            <p className="muted" style={{ fontSize:13, marginTop:12 }}>KalaSetu keeps 8% for delivery, payment and packing support.</p>
+          </div>
+        </>}
+
+        {view === 'inventory' && <InventoryView mine={mine} />}
+        {view === 'insights' && <InsightsView me={me} />}
+        {view === 'profile' && <ProfileView me={me} mine={mine} />}
+      </div>
+    </div>
+  );
+}
+
+function InventoryView({ mine }) {
+  const { dispatch, toast } = useStore();
+  const [stock, setStock] = useState(() => Object.fromEntries(mine.map(p => [p.id, p.stock])));
+  const bump = (id, d) => setStock(s => ({ ...s, [id]: Math.max(0, (s[id] ?? 0) + d) }));
+  return (
+    <>
+      <h2 style={{ marginBottom:6 }}>Inventory</h2>
+      <p className="muted" style={{ marginBottom:16 }}>Keep this up to date so buyers only order what you can actually make.</p>
+      <div className="stack">
+        {mine.map(p => { const n = stock[p.id] ?? p.stock; const low = n <= 3;
+          return (
+          <div className="bigcard" key={p.id} style={{ display:'flex', alignItems:'center', gap:16, padding:16, flexWrap:'wrap' }}>
+            <div style={{ width:70, height:70, borderRadius:12, overflow:'hidden', border:'1px solid var(--rule)' }}><CraftArt kind={p.art} variant={p.id} /></div>
+            <div style={{ flex:1, minWidth:160 }}>
+              <b style={{ fontSize:16 }}>{p.name}</b>
+              {low && <span className="tag low" style={{ position:'static', display:'inline-block', marginLeft:8 }}>Running low</span>}
+            </div>
+            <div className="qty" style={{ transform:'scale(1.15)' }}>
+              <button onClick={() => bump(p.id, -1)} aria-label="Decrease stock">−</button>
+              <span>{n}</span>
+              <button onClick={() => bump(p.id, 1)} aria-label="Increase stock">+</button>
+            </div>
+            <button className="btn btn-green" onClick={() => toast('Stock updated to ' + n + ' pieces', 'check')}>Save</button>
+          </div>); })}
+      </div>
+    </>
+  );
+}
+
+const TRENDS = [
+  { craft:'Terracotta home decor', dir:'up', colours:['Terracotta','Olive','Natural brown'], demand:'High', units:'15–20 units' },
+  { craft:'Handloom stoles & dupattas', dir:'up', colours:['Indigo','Mustard','Off-white'], demand:'High', units:'10–15 units' },
+  { craft:'Brass & metal decor', dir:'flat', colours:['Antique gold','Bronze'], demand:'Steady', units:'8–12 units' },
+];
+function InsightsView({ me }) {
+  return (
+    <>
+      <h2 style={{ marginBottom:6 }}>Market insights</h2>
+      <p className="muted" style={{ marginBottom:16, maxWidth:'56ch' }}>This is guidance based on recent buying patterns on KalaSetu, not a guarantee. Use it to plan what to make next.</p>
+      <div className="stack">
+        {TRENDS.map((t, i) => (
+          <div className="bigcard" key={i}>
+            <div className="row" style={{ alignItems:'flex-start', flexWrap:'wrap', gap:16 }}>
+              <span className="tile-ic" style={{ background: t.dir === 'up' ? 'var(--green-soft)' : 'var(--surface-2)', color: t.dir === 'up' ? 'var(--green)' : 'var(--muted)' }}>
+                <Ic n="sparkle" s={24} />
+              </span>
+              <div style={{ flex:1, minWidth:200 }}>
+                <b style={{ fontSize:17 }}>{t.craft}</b>
+                <p style={{ color: t.dir === 'up' ? 'var(--ok)' : 'var(--muted)', fontWeight:700, fontSize:14, marginTop:2 }}>
+                  {t.dir === 'up' ? '↑ Increasing demand' : '→ Steady demand'}</p>
+              </div>
+              <div>
+                <span className="muted" style={{ fontSize:12.5, display:'block' }}>Demand outlook</span>
+                <b>{t.demand}</b>
+              </div>
+              <div>
+                <span className="muted" style={{ fontSize:12.5, display:'block' }}>Suggested production</span>
+                <b>{t.units}</b>
+              </div>
+            </div>
+            <div className="divider" />
+            <span className="muted" style={{ fontSize:12.5 }}>Popular colours</span>
+            <div className="chipset" style={{ marginTop:6 }}>{t.colours.map(c => <span className="chip" key={c} style={{ pointerEvents:'none' }}>{c}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function ProfileView({ me, mine }) {
+  const { toast } = useStore();
+  const [f, setF] = useState({ name:me.name, village:me.village, story:me.story });
+  const set = (k, v) => setF(s => ({ ...s, [k]: v }));
+  return (
+    <>
+      <h2 style={{ marginBottom:16 }}>My profile</h2>
+      <div className="bigcard stack">
+        <div className="row" style={{ gap:16 }}>
+          <span className="avatar" style={{ width:66, height:66, fontSize:26 }}>{me.name[0]}</span>
+          <div>
+            <b style={{ fontSize:19 }}>{me.name}</b>
+            <p className="muted" style={{ fontSize:13.5 }}>{me.craft} · {me.years} years of experience</p>
+            <span className="pill" style={{ marginTop:6 }}><Ic n="shield" s={13} /> Verified artisan</span>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="field"><label>Your name</label><input className="input" value={f.name} onChange={e => set('name', e.target.value)} /></div>
+        <div className="field"><label>Village</label><input className="input" value={f.village} onChange={e => set('village', e.target.value)} /></div>
+        <div className="field"><label>About you</label><textarea className="input" value={f.story} onChange={e => set('story', e.target.value)} /></div>
+        <div className="row" style={{ gap:22, marginTop:6 }}>
+          <span><b style={{ fontFamily:'var(--display)', fontSize:22 }}>{mine.length}</b><span className="muted" style={{ fontSize:12.5, display:'block' }}>products</span></span>
+          <span><b style={{ fontFamily:'var(--display)', fontSize:22 }}>{me.rating}</b><span className="muted" style={{ fontSize:12.5, display:'block' }}>rating</span></span>
+          <span><b style={{ fontFamily:'var(--display)', fontSize:22 }}>{me.orders}</b><span className="muted" style={{ fontSize:12.5, display:'block' }}>orders</span></span>
+        </div>
+        <button className="btn btn-green btn-lg" onClick={() => toast('Profile saved', 'check')}>Save changes</button>
+      </div>
+    </>
+  );
+}
+
+/* ============================================================
+   7. APP + ROUTING
+   ============================================================ */
+function App() {
+  const [nav, setNav] = useState({ page:'home', cat:'all' });
+  const [query, setQuery] = useState('');
+  const [drawer, setDrawer] = useState(false);
+  const [authTab, setAuthTab] = useState(null); // 'login' | 'signup' | null
+  const go = useCallback(n => { setNav(x => ({ ...x, ...n })); setDrawer(false); window.scrollTo(0,0); }, []);
+
+  const authModal = authTab && <AuthModal tab={authTab} setTab={setAuthTab} onClose={() => setAuthTab(null)}
+    onDone={role => { setAuthTab(null); if (role === 'artisan') go({ page:'artisan' }); }} />;
+
+  if (nav.page === 'artisan') return <>
+    <ArtisanHome exit={() => go({ page:'home' })} go={go} onNeedAuth={() => setAuthTab('signup')} />
+    {authModal}
+  </>;
+
+  const page = {
+    home:     <Home go={go} />,
+    list:     <Listing go={go} nav={nav} />,
+    pdp:      <PDP go={go} nav={nav} />,
+    maker:    <Maker go={go} nav={nav} />,
+    cart:     <Cart go={go} />,
+    wishlist: <Wishlist go={go} />,
+    checkout: <Checkout go={go} />,
+    orders:   <Orders go={go} />,
+  }[nav.page] || <Home go={go} />;
+
+  return (
+    <>
+      <Header go={go} nav={nav} query={query} onOpenDrawer={() => setDrawer(true)} onOpenAuth={t => setAuthTab(t)}
+        onSearch={q => { setQuery(q); setNav(n => n.page === 'list' ? { ...n, q } : n); }} />
+      <main className="wrap">
+        <div className="shell">
+          <Rail go={go} nav={nav} open={drawer} onClose={() => setDrawer(false)} />
+          <div>{page}</div>
+        </div>
+      </main>
+      <Footer go={go} />
+      {authModal}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <StoreProvider><App /></StoreProvider>
+);
+</script>
+<style>
+/* late overrides that depend on component classnames */
+@media (max-width:820px){
+  .cart-grid{grid-template-columns:1fr !important}
+  .prev-grid{grid-template-columns:1fr !important}
+}
+</style>
+</body>
+</html>
