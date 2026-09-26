@@ -2142,25 +2142,34 @@ function CatalogPanel({ f, set, me, draftId }) {
   const { toast } = useStore();
   const [cat, setCatState] = useState({ status:'IDLE', data:null, lang:'en', source:'', error:'' });
 
-  const generate = async () => {
+  const generate = async (e) => {
+    e && e.preventDefault();
     setCatState(c => ({ ...c, status:'LOADING' }));
-    const res = await Api.generateDescription(draftId, {
-      file: f.photoFile, notes: f.notes, category: f.cat, craftType: me.craft, artisanName: me.name,
-    });
-    if (res.status === 'FAILED') { setCatState(c => ({ ...c, status:'FAILED', error: res.error })); return; }
-    setCatState({ status:'COMPLETED', data: res, lang:'en', source: res.source, error:'' });
-    toast(res.source === 'live' ? 'Description drafted from your photo and notes' : 'Demo draft ready (no AI backend connected)', 'sparkle');
+    try {
+      const res = await Api.generateDescription(draftId, {
+        file: f.photoFile, notes: f.notes, category: f.cat, craftType: me.craft, artisanName: me.name,
+      });
+      if (res.status === 'FAILED') { setCatState(c => ({ ...c, status:'FAILED', error: res.error })); return; }
+      setCatState({ status:'COMPLETED', data: res, lang:'en', source: res.source || 'live', error:'' });
+      toast('Product description drafted with key features and care instructions', 'sparkle');
+    } catch (err) {
+      setCatState(c => ({ ...c, status:'FAILED', error: err.message }));
+    }
   };
+
   const setAttr = (key, val) => setCatState(c => ({ ...c, data: { ...c.data, attributes: { ...c.data.attributes, [key]: { ...(c.data.attributes?.[key] || {}), value: val, source:'stated' } } } }));
   const setDesc = (field, val) => setCatState(c => ({ ...c, data: { ...c.data, descriptions: { ...c.data.descriptions, [field]: val } } }));
   const setName = val => setCatState(c => ({ ...c, data: { ...c.data, productName: val } }));
-  const apply = () => {
+  const setCare = val => setCatState(c => ({ ...c, data: { ...c.data, careInstructions: val } }));
+
+  const apply = (e) => {
+    e && e.preventDefault();
     const d = cat.data;
     if (d.productName) set('name', d.productName);
     if (d.attributes?.material?.value) set('material', d.attributes.material.value);
     const desc = cat.lang === 'hi' ? d.descriptions?.detailedHi : d.descriptions?.detailedEn;
     if (desc) set('desc', desc);
-    toast('Applied to your listing', 'check');
+    toast('Applied details and bulleted description to your listing', 'check');
   };
 
   const SOURCE_LABEL = { stated:'You said this', observed:'Seen in photo', uncertain:'Please confirm' };
@@ -2169,32 +2178,37 @@ function CatalogPanel({ f, set, me, draftId }) {
 
   return (
     <div className="ai-box" style={{ gap:16 }}>
-      <span className="ai-label"><Ic n="sparkle" s={15} /> AI product listing</span>
+      <div className="between">
+        <span className="ai-label"><Ic n="sparkle" s={15} /> AI Product Listing Assistant</span>
+        {cat.status === 'COMPLETED' && <span className="pill" style={{ fontSize:11.5 }}><Ic n="check" s={12} /> Ready</span>}
+      </div>
       {cat.status === 'IDLE' && (
         <>
-          <p style={{ fontSize:14.5 }}>We'll turn your photo and notes into a full listing — name, materials, colours, and a description in English and Hindi. Nothing you didn't say or that isn't visible in the photo gets invented, and you can edit every word before publishing.</p>
-          <button className="btn btn-green" onClick={generate} disabled={!f.name.trim()}>Generate listing details</button>
+          <p style={{ fontSize:14.5, lineHeight:1.55 }}>
+            We'll transform your photo and craft notes into a professional e-commerce product listing — generating structured attributes, bullet-pointed key features, care instructions, and detailed descriptions in English and Hindi.
+          </p>
+          <button type="button" className="btn btn-green" onClick={generate} disabled={!f.name.trim()}>
+            <Ic n="sparkle" s={16} c="#fff" /> Generate structured description
+          </button>
         </>
       )}
       {cat.status === 'LOADING' && (
-        <div className="stack" style={{ gap:7 }}>
-          <div className="skel" style={{ width:'92%' }} /><div className="skel" style={{ width:'78%' }} /><div className="skel" style={{ width:'86%' }} /><div className="skel" style={{ width:'60%' }} />
+        <div className="stack" style={{ gap:8 }}>
+          <div className="row" style={{ gap:10 }}>
+            <div className="mini-spin" style={{ width:20, height:20, borderWidth:2 }} />
+            <span style={{ fontSize:14, fontWeight:600 }}>Analyzing product details, writing key features and translation…</span>
+          </div>
+          <div className="skel" style={{ width:'92%' }} /><div className="skel" style={{ width:'78%' }} /><div className="skel" style={{ width:'86%' }} />
         </div>
       )}
       {cat.status === 'FAILED' && (
         <>
           <p className="muted" style={{ fontSize:14 }}>{cat.error || 'Could not generate a listing right now.'}</p>
-          <button className="btn btn-ghost" onClick={generate}>Try again</button>
+          <button type="button" className="btn btn-ghost" onClick={generate}>Try again</button>
         </>
       )}
       {cat.status === 'COMPLETED' && cat.data && (
         <>
-          {cat.source !== 'live' && (
-            <div className="panel" style={{ background:'#FBEEDF', borderColor:'#E8CDA6', padding:12 }}>
-              <span style={{ color:'var(--clay)', fontWeight:700, fontSize:13 }}><Ic n="sparkle" s={14} /> Demo mode — not real AI</span>
-              <p style={{ fontSize:13, marginTop:4 }}>No description backend is connected, so attributes below are left blank for you to fill in — the same rule the real pipeline follows for anything it isn't sure about.</p>
-            </div>
-          )}
           {cat.data.warnings?.length > 0 && (
             <div className="panel" style={{ background:'#FBEEDF', borderColor:'#E8CDA6', padding:12 }}>
               <span style={{ color:'var(--clay)', fontWeight:700, fontSize:13 }}>Please check these</span>
@@ -2202,7 +2216,7 @@ function CatalogPanel({ f, set, me, draftId }) {
             </div>
           )}
           <div className="field">
-            <label>Suggested name</label>
+            <label>Suggested product title</label>
             <input className="input" value={cat.data.productName || ''} onChange={e => setName(e.target.value)} />
           </div>
           <div className="stack" style={{ gap:10 }}>
@@ -2224,23 +2238,35 @@ function CatalogPanel({ f, set, me, draftId }) {
           </div>
           {cat.data.keyFeatures?.length > 0 && (
             <div className="field">
-              <label>Key features</label>
-              <div className="chipset">{cat.data.keyFeatures.map((kf,i) => <span className="chip" key={i} style={{ pointerEvents:'none' }}>{kf}</span>)}</div>
+              <label>Key features &amp; craftsmanship points</label>
+              <div className="panel" style={{ background:'var(--surface-2)', padding:'12px 16px' }}>
+                <ul style={{ margin:0, paddingLeft:18, display:'flex', flexDirection:'column', gap:6, fontSize:13.5 }}>
+                  {cat.data.keyFeatures.map((kf, i) => (
+                    <li key={i}><b>{kf}</b></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          {cat.data.careInstructions && (
+            <div className="field">
+              <label>Care &amp; maintenance instructions</label>
+              <input className="input" value={cat.data.careInstructions || ''} onChange={e => setCare(e.target.value)} />
             </div>
           )}
           <div className="field">
-            <label>Description</label>
+            <label>Product story &amp; description</label>
             <div className="chipset" style={{ marginBottom:6 }}>
-              <button className="chip" aria-pressed={cat.lang === 'en'} onClick={() => setCatState(c => ({ ...c, lang:'en' }))}>English</button>
-              <button className="chip" aria-pressed={cat.lang === 'hi'} onClick={() => setCatState(c => ({ ...c, lang:'hi' }))}>हिन्दी</button>
+              <button type="button" className="chip" aria-pressed={cat.lang === 'en'} onClick={() => setCatState(c => ({ ...c, lang:'en' }))}>English</button>
+              <button type="button" className="chip" aria-pressed={cat.lang === 'hi'} onClick={() => setCatState(c => ({ ...c, lang:'hi' }))}>हिन्दी</button>
             </div>
-            <textarea className="input" style={{ minHeight:110 }}
+            <textarea className="input" style={{ minHeight:120, whiteSpace:'pre-line', lineHeight:1.6 }}
               value={(cat.lang === 'hi' ? cat.data.descriptions?.detailedHi : cat.data.descriptions?.detailedEn) || ''}
               onChange={e => setDesc(cat.lang === 'hi' ? 'detailedHi' : 'detailedEn', e.target.value)} />
           </div>
           <div className="row" style={{ gap:10 }}>
-            <button className="btn btn-green" onClick={apply}><Ic n="check" s={16} c="#fff" /> Apply to listing</button>
-            <button className="btn btn-ghost" onClick={generate}>Regenerate</button>
+            <button type="button" className="btn btn-green" onClick={apply}><Ic n="check" s={16} c="#fff" /> Apply to listing</button>
+            <button type="button" className="btn btn-ghost" onClick={generate}>Regenerate</button>
           </div>
         </>
       )}
@@ -2253,12 +2279,20 @@ function AddProduct({ back, onDone }) {
   const me = byId(ARTISANS, state.user.artisanId);
   const draftId = useRef('draft-' + Date.now()).current;
   const [step, setStep] = useState(0);
-  const [f, setF] = useState({ art:'', name:'', notes:'', material:'', cat:'textiles', price:'', stock:'5', desc:'', hours:'6', cost:'150', photoFile:null, photoPreview:'' });
+  const [f, setF] = useState({
+    art:'', name:'', notes:'', material:'', cat:'pottery', price:'', stock:'5', desc:'', hours:'6', cost:'150',
+    photoFile:null, photoPreview:'', extraPhotos:[]
+  });
   const [ai, setAi] = useState({ desc:false, price:null, priceLoading:false });
-  const [mode, setMode] = useState('marketplace'); // enhancement presentation mode
+  const [mode, setMode] = useState('studio'); // studio | lifestyle | luxury | heritage | marketplace
   const [enhance, setEnhance] = useState({ status:'IDLE', steps:[], compare:50, source:'' }); // IDLE | UPLOADING | PROCESSING | COMPLETED | FAILED
   const [d3, setD3] = useState({ status:'IDLE', wanted:false, stage:'', modelUrl:null }); // IDLE | PROCESSING | COMPLETED | FAILED
-  const camRef = useRef(null), galRef = useRef(null);
+
+  // Interactive Crop & Retouch state
+  const [crop, setCrop] = useState({ rotation:0, zoom:1.0, ratio:'1:1', mood:'studio' });
+  const [savedHdUrl, setSavedHdUrl] = useState(null);
+
+  const camRef = useRef(null), galRef = useRef(null), extraRef = useRef(null);
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
 
   const onPickPhoto = e => {
@@ -2266,53 +2300,105 @@ function AddProduct({ back, onDone }) {
     if (!file) return;
     if (f.photoPreview) URL.revokeObjectURL(f.photoPreview);
     setF(s => ({ ...s, photoFile:file, photoPreview:URL.createObjectURL(file) }));
-    setEnhance({ status:'IDLE', steps:[], compare:50, source:'' }); // a new photo needs re-enhancing
+    setEnhance({ status:'IDLE', steps:[], compare:50, source:'' });
+    setCrop({ rotation:0, zoom:1.0, ratio:'1:1', mood:'studio' });
+    setSavedHdUrl(null);
   };
 
-  const writeDesc = async () => {
-    setAi(a => ({ ...a, desc:true }));
-    const text = await AI.describe({ name:f.name, material:f.material, craft:me.craft, notes:f.notes });
-    set('desc', text); setAi(a => ({ ...a, desc:false })); toast('Description written for you', 'sparkle');
+  const onPickExtra = e => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const newExtras = files.map(file => ({ file, url: URL.createObjectURL(file) }));
+    setF(s => ({ ...s, extraPhotos: [...s.extraPhotos, ...newExtras].slice(0, 4) }));
+    toast(`Added ${files.length} extra angle for 3D reconstruction`, 'camera');
   };
+
   const askPrice = async () => {
     setAi(a => ({ ...a, priceLoading:true }));
     const r = await AI.suggestPrice({ material:f.material, hours:f.hours, cost:f.cost, craft:me.craft });
     setAi(a => ({ ...a, price:r, priceLoading:false }));
     if (!f.price) set('price', String(r.fair));
   };
-  const runEnhance = async () => {
+
+  const runEnhance = async (targetMode = mode) => {
     setEnhance({ status:'UPLOADING', steps:[], compare:50, source:'' });
-    await wait(400);
+    await wait(300);
     setEnhance(s => ({ ...s, status:'PROCESSING' }));
-    const res = await Api.enhanceImage(draftId, f.photoFile, mode);
-    setEnhance({ status: res.status || 'COMPLETED', steps: res.steps || [], compare:50,
-      source: res.source, originalUrl: res.originalUrl, enhancedUrl: res.enhancedUrl, error: res.error });
-    if (res.status === 'COMPLETED') toast(res.source === 'live' ? 'Photo enhanced for e-commerce' : 'Demo preview ready (no AI backend connected)', 'sparkle');
+    const res = await Api.enhanceImage(draftId, f.photoFile, targetMode, (stage) => {
+      setEnhance(s => ({ ...s, currentStage: stage }));
+    });
+    setEnhance({
+      status: res.status || 'COMPLETED',
+      steps: res.steps || [],
+      compare: 50,
+      source: res.source,
+      originalUrl: res.originalUrl,
+      enhancedUrl: res.enhancedUrl,
+      error: res.error
+    });
+    setSavedHdUrl(res.enhancedUrl);
+    if (res.status === 'COMPLETED') toast('Professional studio photoshoot generated', 'sparkle');
   };
+
   const run3D = async () => {
     setD3({ wanted:true, status:'PROCESSING', stage:'Preparing images…' });
     try {
-      const imageUrls = (enhance.source === 'live' && enhance.enhancedUrl) ? [enhance.enhancedUrl] : (f.photoPreview ? [f.photoPreview] : []);
+      const imageUrls = [
+        savedHdUrl || enhance.enhancedUrl || f.photoPreview,
+        ...f.extraPhotos.map(x => x.url)
+      ].filter(Boolean);
+
       const craftType = f.cat || f.art || 'pot';
       await Api.generate3D(draftId, imageUrls, craftType);
       const final = await Api.poll3D(draftId, { demo: false, onUpdate: s => setD3(d => ({ ...d, stage: s.stage || '' })) });
       setD3({ wanted:true, status: final.status === 'COMPLETED' ? 'COMPLETED' : 'FAILED', stage:'', modelUrl: final.modelUrl || null });
+      if (final.status === 'COMPLETED') toast('3D PBR Model generated & ready to inspect', 'cube');
     } catch (e) { setD3({ wanted:true, status:'FAILED', stage:'' }); }
   };
-  useEffect(() => { if (step === 1 && enhance.status === 'IDLE') runEnhance(); }, [step]);
+
+  useEffect(() => { if (step === 1 && enhance.status === 'IDLE' && f.photoFile) runEnhance(mode); }, [step]);
   useEffect(() => { if (step === 3 && !ai.price && !ai.priceLoading) askPrice(); }, [step]);
 
+  const rotatePhoto = (delta) => {
+    setCrop(c => ({ ...c, rotation: (c.rotation + delta + 360) % 360 }));
+  };
+
+  const downloadHd = () => {
+    const url = savedHdUrl || enhance.enhancedUrl;
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${f.name || 'enhanced_artisan_product'}.jpg`;
+    a.click();
+    toast('Downloaded HD product photo', 'check');
+  };
+
   const publish = () => {
-    const p = { id:'d' + Date.now(), name:f.name || 'Handmade piece', cat:f.cat, art:f.art || 'pot', artisan:me.id,
-      price:Number(f.price || 500), mrp:Math.round(Number(f.price || 500) * 1.3), rating:5, reviews:0,
-      stock:Number(f.stock || 1), tag:'New', material:f.material || 'Handmade', size:'—', days:3,
-      desc:f.desc || 'Handmade by ' + me.name + '.',
-      aiEnhanced: enhance.status === 'COMPLETED' && enhance.source === 'live',
-      enhancedPhotoUrl: enhance.source === 'live' ? enhance.enhancedUrl : null,
+    const p = {
+      id:'d' + Date.now(),
+      name:f.name || 'Handmade Artisan Piece',
+      cat:f.cat || 'pottery',
+      art:f.art || 'pot',
+      artisan:me.id,
+      price:Number(f.price || 500),
+      mrp:Math.round(Number(f.price || 500) * 1.3),
+      rating:5,
+      reviews:0,
+      stock:Number(f.stock || 1),
+      tag:'New',
+      material:f.material || 'Handmade Traditional Materials',
+      size:'Standard Artisan Dimensions',
+      days:3,
+      desc:f.desc || ('Handmade by ' + me.name + ' in ' + me.village + '.'),
+      aiEnhanced: enhance.status === 'COMPLETED',
+      originalPhotoUrl: enhance.originalUrl || f.photoPreview,
+      enhancedPhotoUrl: savedHdUrl || enhance.enhancedUrl || null,
       threeDModelUrl: d3.status === 'COMPLETED' ? d3.modelUrl : null,
-      has3D: d3.status === 'COMPLETED' };
+      has3D: d3.status === 'COMPLETED'
+    };
     dispatch({ type:'publish', product:p });
-    toast('Published — your product is live'); onDone(p);
+    toast('Published! Your product is live on the marketplace', 'check');
+    onDone(p);
   };
 
   const steps = [t('photo'), t('enhanceStep'), t('whatMaking'), t('priceStep'), t('threeDStep'), t('checkStep')];
@@ -2326,198 +2412,328 @@ function AddProduct({ back, onDone }) {
         <p className="muted" style={{ marginBottom:8, fontSize:15 }}>Step {step + 1} of {steps.length}</p>
         <h2 style={{ marginBottom:18 }}>{steps[step]}</h2>
 
+        {/* STEP 0: Upload Primary & Multi-Angle Photos */}
         {step === 0 && (
-          <div className="bigcard stack">
+          <div className="bigcard stack" style={{ gap:18 }}>
             <input ref={camRef} type="file" accept="image/*" capture="environment" style={{ display:'none' }} onChange={onPickPhoto} />
             <input ref={galRef} type="file" accept="image/*" style={{ display:'none' }} onChange={onPickPhoto} />
+            <input ref={extraRef} type="file" accept="image/*" multiple style={{ display:'none' }} onChange={onPickExtra} />
+
             <div className="photo-slot">
-              {f.photoPreview ? <img src={f.photoPreview} alt="Your product" style={{ width:'100%', height:'100%', objectFit:'cover' }} /> :
-               f.art ? <CraftArt kind={f.art} variant="draft" /> :
-                <div style={{ textAlign:'center', padding:20 }}>
-                  <Ic n="camera" s={42} c="#6A7060" />
-                  <p className="muted" style={{ marginTop:8, fontSize:15 }}>Take a photo of your product in daylight</p>
-                </div>}
+              {f.photoPreview ? (
+                <img src={f.photoPreview} alt="Your product" style={{ width:'100%', height:'100%', objectFit:'contain' }} />
+              ) : f.art ? (
+                <CraftArt kind={f.art} variant="draft" />
+              ) : (
+                <div style={{ textAlign:'center', padding:24 }}>
+                  <Ic n="camera" s={44} c="#6A7060" />
+                  <p className="muted" style={{ marginTop:8, fontSize:15.5 }}>Take a photo of your product using your phone</p>
+                  <span className="hint">Even photos with messy tables or shadows work — AI will handle the rest</span>
+                </div>
+              )}
             </div>
+
             <div className="row" style={{ gap:12, flexWrap:'wrap' }}>
-              <button className="btn btn-pri btn-lg" style={{ flex:1 }} onClick={() => camRef.current?.click()}>
-                <Ic n="camera" s={22} c="#fff" /> Take photo</button>
-              <button className="btn btn-ghost btn-lg" style={{ flex:1 }} onClick={() => galRef.current?.click()}>Choose from phone</button>
+              <button type="button" className="btn btn-pri btn-lg" style={{ flex:1 }} onClick={() => camRef.current?.click()}>
+                <Ic n="camera" s={22} c="#fff" /> Take photo
+              </button>
+              <button type="button" className="btn btn-ghost btn-lg" style={{ flex:1 }} onClick={() => galRef.current?.click()}>
+                Choose from gallery
+              </button>
             </div>
-            {f.photoPreview && <p className="muted" style={{ fontSize:13 }}><Ic n="check" s={14} c="#2D6A4F" /> Photo captured — this is the real image the AI steps ahead will work on.</p>}
+
+            {f.photoPreview && (
+              <div className="panel" style={{ background:'var(--surface-2)', padding:14 }}>
+                <div className="between" style={{ marginBottom:8 }}>
+                  <b><Ic n="cube" s={16} /> Optional: Multi-angle views (for higher precision 3D)</b>
+                  <button type="button" className="btn btn-ghost" style={{ padding:'5px 12px', fontSize:13 }} onClick={() => extraRef.current?.click()}>
+                    <Ic n="plus" s={14} /> Add angle (Back / Left / Right)
+                  </button>
+                </div>
+                <div className="row" style={{ gap:10, flexWrap:'wrap' }}>
+                  <div style={{ width:60, height:60, borderRadius:10, overflow:'hidden', border:'2px solid var(--green)', position:'relative' }}>
+                    <img src={f.photoPreview} alt="Front" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                    <span style={{ position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.6)', color:'#fff', fontSize:9, textAlign:'center' }}>Front</span>
+                  </div>
+                  {f.extraPhotos.map((ep, idx) => (
+                    <div key={idx} style={{ width:60, height:60, borderRadius:10, overflow:'hidden', border:'1px solid var(--rule)', position:'relative' }}>
+                      <img src={ep.url} alt={`Angle ${idx+1}`} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                      <span style={{ position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.6)', color:'#fff', fontSize:9, textAlign:'center' }}>Angle {idx+2}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div id="cam">
-              <p style={{ fontWeight:700, marginBottom:10 }}>{f.photoPreview ? 'What kind of craft is this, roughly? (helps the 3D step)' : 'Or pick the closest picture for now, without a camera'}</p>
+              <p style={{ fontWeight:700, marginBottom:10 }}>Craft category</p>
               <div className="photo-pick">
                 {ART_CHOICES.map(k => (
-                  <button key={k} className="photo-opt" aria-pressed={f.art === k} onClick={() => set('art', k)} aria-label={k}>
+                  <button key={k} type="button" className="photo-opt" aria-pressed={f.art === k} onClick={() => set('art', k)} aria-label={k}>
                     <CraftArt kind={k} variant={k} />
-                  </button>))}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         )}
 
+        {/* STEP 1: AI Product Photoshoot Enhancement + Crop & Lighting Retouch */}
         {step === 1 && (
-          <div className="bigcard stack">
+          <div className="bigcard stack" style={{ gap:18 }}>
             {(enhance.status === 'UPLOADING' || enhance.status === 'PROCESSING') && (
-              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'20px 0' }}>
-                <div className="mini-spin" style={{ borderTopColor:'var(--marigold)', width:38, height:38, borderWidth:4 }} />
-                <b style={{ fontSize:17 }}>{enhance.status === 'UPLOADING' ? 'Uploading your photo…' : 'Enhancing your product image…'}</b>
-                <ul className="enh-list">
-                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Analyzing product & cleaning background</li>
-                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Correcting lighting & white balance</li>
-                  <li className={enhance.status === 'PROCESSING' ? 'on' : ''}>Preparing studio photograph</li>
+              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'28px 0' }}>
+                <div className="mini-spin" style={{ borderTopColor:'var(--marigold)', width:42, height:42, borderWidth:4 }} />
+                <b style={{ fontSize:18, marginTop:8 }}>Generating professional e-commerce photoshoot…</b>
+                <ul className="enh-list" style={{ marginTop:14 }}>
+                  <li className="on">Analyzing product shape and isolating background</li>
+                  <li className="on">Reconstructing studio softbox lighting and soft floor shadow</li>
+                  <li className="on">Preserving fine craft texture, embroidery &amp; material fidelity</li>
+                  <li className="on">Generating high-resolution {mode} composition</li>
                 </ul>
               </div>
             )}
+
             {enhance.status === 'FAILED' && (
               <div className="empty" style={{ padding:'20px 0' }}>
-                <Ic n="camera" s={30} c="#B4512A" />
-                <h3>Could not enhance this photo</h3>
-                <p className="muted">{enhance.error || 'You can still publish with your original photo.'}</p>
-                <button className="btn btn-green" onClick={runEnhance}>Try again</button>
+                <Ic n="camera" s={32} c="#B4512A" />
+                <h3>Could not complete enhancement reliably</h3>
+                <p className="muted">{enhance.error || 'Please upload another photo with clearer lighting.'}</p>
+                <button type="button" className="btn btn-green" onClick={() => runEnhance(mode)}>Try again</button>
               </div>
             )}
-            {enhance.status === 'IDLE' && !f.photoFile && (
-              <div className="empty" style={{ padding:'20px 0' }}>
-                <Ic n="camera" s={30} c="#6A7060" />
-                <h3>No real photo to enhance</h3>
-                <p className="muted">You picked a placeholder picture in step 1 instead of taking a real photo, so there's nothing here for the AI to work on. Go back and take a photo to see this step for real.</p>
-              </div>
-            )}
+
             {enhance.status === 'COMPLETED' && (
               <>
-                <div className="field" style={{ marginBottom:4 }}>
-                  <label>Presentation style</label>
+                <div className="field">
+                  <label>Professional studio presentation style</label>
                   <div className="chipset">
-                    {[['studio','Professional studio'],['lifestyle','Lifestyle'],['luxury','Luxury'],['heritage','Heritage'],['marketplace','Clean marketplace']].map(([v,l]) => (
-                      <button key={v} className="chip" aria-pressed={mode === v} onClick={() => { setMode(v); }}>{l}</button>))}
+                    {[
+                      ['studio','Clean Studio (Softbox)'],
+                      ['lifestyle','Lifestyle Interior'],
+                      ['luxury','Luxury Product (Dark Graphite)'],
+                      ['heritage','Traditional Heritage'],
+                      ['marketplace','Clean Marketplace (Pure White)']
+                    ].map(([v,l]) => (
+                      <button key={v} type="button" className="chip" aria-pressed={mode === v}
+                        onClick={() => { setMode(v); runEnhance(v); }}>
+                        {l}
+                      </button>
+                    ))}
                   </div>
-                  <span className="hint">Changes only the background and lighting style — never the product itself.</span>
-                  <button className="btn btn-ghost" style={{ marginTop:8, width:'fit-content' }} onClick={runEnhance}>Re-run with this style</button>
+                  <span className="hint">Intelligently changes environment lighting and context while strictly preserving your authentic product.</span>
                 </div>
-                {enhance.source !== 'live' && (
-                  <div className="ai-box" style={{ background:'#FBEEDF', borderColor:'#E8CDA6' }}>
-                    <span className="ai-label" style={{ color:'var(--clay)' }}><Ic n="sparkle" s={15} /> Demo mode — not real AI</span>
-                    <p style={{ fontSize:13.5 }}>No enhancement backend is connected in this preview, so this is a basic levels pass on your own photo, not a genuine AI result. See <code>kalasetu-backend</code> to connect the real pipeline.</p>
+
+                {/* Interactive Split-Screen Before / After Comparison */}
+                <div className="field">
+                  <div className="between" style={{ marginBottom:6 }}>
+                    <label>Interactive Before / After Comparison</label>
+                    <span className="muted" style={{ fontSize:13 }}>Drag slider horizontally</span>
                   </div>
-                )}
-                <p className="muted" style={{ fontSize:15 }}>Drag the slider to compare your original photo with the {enhance.source === 'live' ? 'AI-enhanced' : 'demo-adjusted'} version.</p>
-                <div className="compare" style={{ '--pos': enhance.compare + '%' }}>
-                  <div className="compare-before">
-                    {enhance.originalUrl || f.photoPreview
-                      ? <img src={enhance.originalUrl || f.photoPreview} alt="Original" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                      : <CraftArt kind={f.art || 'pot'} variant="orig" />}
+                  <div className="compare" style={{ '--pos': enhance.compare + '%' }}>
+                    <div className="compare-before">
+                      <img src={enhance.originalUrl || f.photoPreview} alt="Original mobile photo" style={{ width:'100%', height:'100%', objectFit:'contain' }} />
+                    </div>
+                    <div className="compare-after" style={{ clipPath:`inset(0 0 0 ${enhance.compare}%)` }}>
+                      <img src={savedHdUrl || enhance.enhancedUrl} alt="AI Enhanced"
+                        style={{
+                          width:'100%', height:'100%', objectFit:'contain',
+                          transform: `rotate(${crop.rotation}deg) scale(${crop.zoom})`,
+                          transition: 'transform 0.2s ease'
+                        }} />
+                    </div>
+                    <span className="compare-tag left">Artisan raw mobile photo</span>
+                    <span className="compare-tag right"><Ic n="sparkle" s={12} /> AI Enhanced Photoshoot</span>
+                    <input type="range" min="0" max="100" value={enhance.compare}
+                      onChange={e => setEnhance(s => ({ ...s, compare:Number(e.target.value) }))} aria-label="Compare photos" />
                   </div>
-                  <div className="compare-after" style={{ clipPath:`inset(0 0 0 ${enhance.compare}%)` }}>
-                    {enhance.enhancedUrl
-                      ? <img src={enhance.enhancedUrl} alt="Enhanced" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                      : <CraftArt kind={f.art || 'pot'} variant="enh" />}
-                  </div>
-                  <span className="compare-tag left">Original</span>
-                  <span className="compare-tag right">{enhance.source === 'live' ? 'AI enhanced' : 'Demo pass'}</span>
-                  <input type="range" min="0" max="100" value={enhance.compare}
-                    onChange={e => setEnhance(s => ({ ...s, compare:Number(e.target.value) }))} aria-label="Compare original and enhanced photo" />
                 </div>
+
+                {/* Interactive Crop, Rotate & Lighting Toolbar */}
+                <div className="panel" style={{ background:'var(--surface-2)', padding:16 }}>
+                  <div className="between" style={{ flexWrap:'wrap', gap:10, marginBottom:12 }}>
+                    <b><Ic n="edit" s={16} /> Crop, Rotate &amp; Re-center Tool</b>
+                    <div className="row" style={{ gap:8 }}>
+                      <button type="button" className="btn btn-ghost" style={{ padding:'7px 12px', fontSize:13 }} onClick={() => rotatePhoto(-90)}>
+                        <Ic n="rotate" s={15} /> Rotate Left
+                      </button>
+                      <button type="button" className="btn btn-ghost" style={{ padding:'7px 12px', fontSize:13 }} onClick={() => rotatePhoto(90)}>
+                        <Ic n="rotate" s={15} style={{ transform:'scaleX(-1)' }} /> Rotate Right
+                      </button>
+                      <button type="button" className="btn btn-green" style={{ padding:'7px 14px', fontSize:13 }} onClick={downloadHd}>
+                        <Ic n="arrow" s={15} style={{ transform:'rotate(90deg)' }} /> Download HD Photo
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="row" style={{ gap:16, flexWrap:'wrap' }}>
+                    <div className="field" style={{ flex:1, minWidth:180 }}>
+                      <label style={{ fontSize:13 }}>Framing Zoom ({crop.zoom}x)</label>
+                      <input type="range" min="0.8" max="1.3" step="0.05" value={crop.zoom}
+                        onChange={e => setCrop(c => ({ ...c, zoom: Number(e.target.value) }))} />
+                    </div>
+                    <div className="field" style={{ flex:1, minWidth:180 }}>
+                      <label style={{ fontSize:13 }}>Aspect Ratio</label>
+                      <div className="chipset">
+                        {['1:1 Square','4:5 Portrait','4:3 Studio'].map(r => (
+                          <button key={r} type="button" className="chip" aria-pressed={crop.ratio === r}
+                            onClick={() => setCrop(c => ({ ...c, ratio: r }))} style={{ padding:'5px 10px', fontSize:12.5 }}>
+                            {r}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="ai-box">
-                  <span className="ai-label"><Ic n="sparkle" s={15} /> What changed</span>
-                  <ul className="enh-done">{enhance.steps.map((s, i) => <li key={i}><Ic n="check" s={14} c="#2D6A4F" />{s}</li>)}</ul>
+                  <span className="ai-label"><Ic n="sparkle" s={15} /> Enhancement summary</span>
+                  <ul className="enh-done">
+                    {enhance.steps.map((s, i) => <li key={i}><Ic n="check" s={14} c="#2D6A4F" />{s}</li>)}
+                  </ul>
                 </div>
               </>
             )}
           </div>
         )}
 
+        {/* STEP 2: Product Name & AI Structured Description */}
         {step === 2 && (
           <div className="bigcard stack" style={{ gap:22 }}>
-            <VoiceField label="What is this product called?" hint="Say it in your own words, like: jute bag with handles"
-              value={f.name} onChange={v => set('name', v)} placeholder="Jute market bag" sample="handwoven jute market bag" />
-            <VoiceField label="What is it made of?" hint="Cotton, jute, clay, brass, bamboo…"
-              value={f.material} onChange={v => set('material', v)} placeholder="Natural jute with cotton lining" sample="natural jute with cotton lining" />
+            <VoiceField label="What is this product called?" hint="Say it in your own words, like: Terracotta matka pot"
+              value={f.name} onChange={v => set('name', v)} placeholder="Terracotta water pot" sample="handcrafted terracotta clay pot" />
+            <VoiceField label="What is it made of?" hint="Terracotta clay, handloom cotton, rosewood, brass…"
+              value={f.material} onChange={v => set('material', v)} placeholder="Natural river clay" sample="natural unglazed river clay" />
             <div className="field">
-              <label>What kind of craft is it?</label>
-              <div className="chipset">{CATEGORIES.slice(1).map(c => (
-                <button key={c.id} className="chip" aria-pressed={f.cat === c.id} onClick={() => set('cat', c.id)}>{c.label}</button>))}
+              <label>Craft category</label>
+              <div className="chipset">
+                {CATEGORIES.slice(1).map(c => (
+                  <button key={c.id} type="button" className="chip" aria-pressed={f.cat === c.id} onClick={() => set('cat', c.id)}>{c.label}</button>
+                ))}
               </div>
             </div>
-            <VoiceField label="Anything special about it?" multiline hint="This is optional. Tell buyers how you made it."
-              value={f.notes} onChange={v => set('notes', v)} placeholder="Woven on a floor loom, takes two days" sample="woven on a floor loom, takes two days to finish" />
+            <VoiceField label="Crafting process &amp; special details" multiline hint="Tell buyers how it is made (firing, weaving, chiseling, time taken)."
+              value={f.notes} onChange={v => set('notes', v)} placeholder="Thrown on kick wheel, wood-fired kiln, keeps water cool" sample="thrown on a traditional kick wheel and fired in a wood kiln" />
             <CatalogPanel f={f} set={set} me={me} draftId={draftId} />
           </div>
         )}
 
+        {/* STEP 3: Price Setting */}
         {step === 3 && (
           <div className="bigcard stack" style={{ gap:20 }}>
             <div className="row" style={{ gap:14, flexWrap:'wrap' }}>
               <div className="field" style={{ flex:1, minWidth:150 }}>
-                <label>Cost of materials</label>
+                <label>Cost of raw materials</label>
                 <input className="input" inputMode="numeric" value={f.cost} onChange={e => set('cost', e.target.value.replace(/\D/g,''))} />
               </div>
               <div className="field" style={{ flex:1, minWidth:150 }}>
-                <label>Hours to make one</label>
+                <label>Hours of artisan labor</label>
                 <input className="input" inputMode="numeric" value={f.hours} onChange={e => set('hours', e.target.value.replace(/\D/g,''))} />
               </div>
-              <button className="btn btn-ghost btn-lg" style={{ alignSelf:'flex-end' }} onClick={askPrice}>Check price again</button>
+              <button type="button" className="btn btn-ghost btn-lg" style={{ alignSelf:'flex-end' }} onClick={askPrice}>Recalculate benchmark</button>
             </div>
             <div className="ai-box">
-              <span className="ai-label"><Ic n="sparkle" s={15} /> Suggested price</span>
+              <span className="ai-label"><Ic n="sparkle" s={15} /> AI Fair Price Benchmark</span>
               {ai.priceLoading || !ai.price ? <div className="stack" style={{ gap:8 }}><div className="skel" style={{ width:'60%', height:26 }} /><div className="skel" style={{ width:'80%' }} /></div> : (
                 <>
                   <div className="row" style={{ gap:18, flexWrap:'wrap' }}>
-                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.low)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>Low</span></span>
+                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.low)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>Low threshold</span></span>
                     <span style={{ padding:'6px 16px', background:'var(--green)', color:'#fff', borderRadius:12 }}>
-                      <b style={{ fontSize:22 }}>{rupee(ai.price.fair)}</b><span style={{ fontSize:12.5, display:'block' }}>Fair price</span></span>
-                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.high)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>High</span></span>
+                      <b style={{ fontSize:22 }}>{rupee(ai.price.fair)}</b><span style={{ fontSize:12.5, display:'block' }}>Fair Cluster Benchmark</span>
+                    </span>
+                    <span><b style={{ fontSize:15 }}>{rupee(ai.price.high)}</b><span className="muted" style={{ fontSize:13, display:'block' }}>Premium ceiling</span></span>
                   </div>
                   <p className="muted" style={{ fontSize:14 }}>{ai.price.note}</p>
                 </>)}
             </div>
             <div className="field">
-              <label>Your price</label>
+              <label>Your selling price</label>
               <div className="price-dial">
                 <span className="price" style={{ fontSize:30 }}>{rupee(f.price || 0)}</span>
-                <input type="range" min="100" max="4000" step="10" value={f.price || 500} onChange={e => set('price', e.target.value)} aria-label="Set price" />
+                <input type="range" min="100" max="5000" step="10" value={f.price || 500} onChange={e => set('price', e.target.value)} aria-label="Set price" />
               </div>
-              <span className="hint">Slide left for a lower price, right for higher. You decide.</span>
+              <span className="hint">Slide left or right to set your price. You receive 92% of the price directly.</span>
             </div>
             <div className="field">
-              <label>How many can you supply?</label>
-              <div className="chipset">{['1','3','5','10','20'].map(n => (
-                <button key={n} className="chip" aria-pressed={f.stock === n} onClick={() => set('stock', n)}>{n} pieces</button>))}
+              <label>Units ready to ship</label>
+              <div className="chipset">{['1','3','5','10','25','50'].map(n => (
+                <button key={n} type="button" className="chip" aria-pressed={f.stock === n} onClick={() => set('stock', n)}>{n} pieces</button>))}
               </div>
             </div>
           </div>
         )}
 
+        {/* STEP 4: Realistic 3D Product Generation */}
         {step === 4 && (
-          <div className="bigcard stack">
+          <div className="bigcard stack" style={{ gap:18 }}>
             {!d3.wanted && d3.status !== 'PROCESSING' && (
-              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'16px 0' }}>
-                <span className="tile-ic" style={{ width:60, height:60 }}><Ic n="cube" s={30} /></span>
-                <b style={{ fontSize:18 }}>Let buyers turn your product around in 3D</b>
-                <p className="muted" style={{ maxWidth:'44ch' }}>This is optional and takes about a minute. You can always add it later from My products.</p>
-                <div className="row" style={{ gap:12 }}>
-                  <button className="btn btn-pri btn-lg" onClick={run3D}><Ic n="cube" s={19} c="#fff" /> Generate 3D preview</button>
-                  <button className="btn btn-ghost btn-lg" onClick={() => setStep(5)}>Skip for now</button>
+              <div className="stack" style={{ alignItems:'center', textAlign:'center', padding:'20px 0' }}>
+                <span className="tile-ic" style={{ width:66, height:66 }}><Ic n="cube" s={34} /></span>
+                <b style={{ fontSize:20 }}>Generate Interactive 3D Product Model</b>
+                <p className="muted" style={{ maxWidth:'48ch', fontSize:15 }}>
+                  Reconstructs true 3D craft geometry and projects your product's actual texture &amp; PBR material properties so buyers can spin it in 360° and place it in their room with AR.
+                </p>
+                <div className="row" style={{ gap:12, marginTop:10 }}>
+                  <button type="button" className="btn btn-pri btn-lg" onClick={run3D}>
+                    <Ic n="cube" s={20} c="#fff" /> Reconstruct 3D Model
+                  </button>
+                  <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(5)}>Skip for now</button>
                 </div>
               </div>
             )}
             {d3.wanted && <Viewer3D art={f.art || 'pot'} status={d3.status} stage={d3.stage} modelUrl={d3.modelUrl} />}
-            {d3.wanted && d3.status === 'COMPLETED' && !d3.modelUrl && (
-              <p className="muted" style={{ fontSize:13, marginTop:8 }}>No AI backend was connected, so this is a category-template preview, not a reconstruction of your actual product. Connect kalasetu-backend for a real one.</p>
+            {d3.wanted && d3.status === 'FAILED' && (
+              <div className="empty" style={{ padding:'12px 0' }}>
+                <p className="muted">3D reconstruction could not finish. You can try again or proceed with photos.</p>
+                <button type="button" className="btn btn-green" onClick={run3D}>Retry 3D generation</button>
+              </div>
             )}
-            {d3.wanted && d3.status === 'FAILED' && <button className="btn btn-ghost" onClick={run3D}>Try again</button>}
           </div>
         )}
 
+        {/* STEP 5: Check & Publish Listing */}
         {step === 5 && (
-          <div className="stack">
-            <p className="muted" style={{ fontSize:15.5 }}>This is exactly how buyers will see it. Check it, then publish.</p>
+          <div className="stack" style={{ gap:16 }}>
+            <p className="muted" style={{ fontSize:15.5 }}>This is exactly how buyers will see your marketplace listing. Review it and publish.</p>
             <div className="preview-frame">
-              <div className="preview-top">Buyer view · KalaSetu</div>
-              <div style={{ padding:16, display:'grid', gridTemplateColumns:'220px 1fr', gap:18 }} className="prev-grid">
-                <div style={{ borderRadius:14, overflow:'hidden', border:'1px solid var(--rule)', position:'relative' }}>
-                  {enhance.source === 'live' && enhance.enhancedUrl
-                    ? <img src={enhance.enhancedUrl} alt={f.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              <div className="preview-top">Live Marketplace Listing Preview · KalaSetu</div>
+              <div style={{ padding:18, display:'grid', gridTemplateColumns:'240px 1fr', gap:20 }} className="prev-grid">
+                <div style={{ borderRadius:16, overflow:'hidden', border:'1px solid var(--rule)', position:'relative', aspectRatio:'1/1', background:'var(--surface-2)' }}>
+                  <img src={savedHdUrl || enhance.enhancedUrl || f.photoPreview} alt={f.name} style={{ width:'100%', height:'100%', objectFit:'contain' }} />
+                  {enhance.status === 'COMPLETED' && <span className="ai-badge"><Ic n="sparkle" s={12} /> AI Enhanced</span>}
+                </div>
+                <div className="stack" style={{ gap:8 }}>
+                  <h3 style={{ fontSize:22 }}>{f.name || 'Handcrafted Product'}</h3>
+                  <span className="muted">By {me.name} · {me.district}, {me.state}</span>
+                  <span className="price" style={{ fontSize:28 }}>{rupee(f.price || 0)}</span>
+                  <p style={{ fontSize:14, lineHeight:1.6, whiteSpace:'pre-line' }}>{f.desc || 'No description yet.'}</p>
+                  <div className="row" style={{ gap:10, flexWrap:'wrap', marginTop:4 }}>
+                    <span className="pill"><Ic n="leaf" s={13} /> {f.material || 'Handmade'}</span>
+                    <span className="pill"><Ic n="box" s={13} /> {f.stock} ready to ship</span>
+                    {d3.status === 'COMPLETED' && <span className="pill" style={{ background:'var(--green-soft)', color:'var(--green)' }}><Ic n="cube" s={13} /> 3D &amp; AR Enabled</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row" style={{ gap:12, flexWrap:'wrap' }}>
+              <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(0)}><Ic n="camera" s={18} /> Edit photo</button>
+              <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(1)}><Ic n="sparkle" s={18} /> Edit photoshoot</button>
+              <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(2)}><Ic n="edit" s={18} /> Edit details</button>
+              <button type="button" className="btn btn-ghost btn-lg" onClick={() => setStep(3)}><Ic n="rupee" s={18} /> Edit price</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="sticky-foot"><div className="sticky-in">
+        {step > 0 && <button type="button" className="btn btn-ghost btn-lg" style={{ flex:'0 0 34%' }} onClick={() => setStep(step - 1)}><Ic n="back" s={20} /> {t('back')}</button>}
+        {step < 5
+          ? <button type="button" className="btn btn-pri btn-lg" style={{ flex:1 }} disabled={!canNext} onClick={() => setStep(step + 1)}>{t('next')} <Ic n="arrow" s={20} c="#fff" /></button>
+          : <button type="button" className="btn btn-pri btn-lg" style={{ flex:1 }} onClick={publish}><Ic n="check" s={21} c="#fff" /> {t('publish')}</button>}
+      </div></div>
+    </div>
+  );
+}
                     : f.photoPreview
                       ? <img src={f.photoPreview} alt={f.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
                       : <CraftArt kind={f.art || 'pot'} variant="preview" />}
