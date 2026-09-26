@@ -28,7 +28,8 @@ app.get('/health', (req, res) => {
 
 // Serve frontend application
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve('./ARTIZONE — artisan market linkage platform.html'));
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.sendFile(path.resolve('./index.html'));
 });
 app.use(express.static(path.resolve('.')));
 

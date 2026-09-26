@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   KalaSetu — design tokens
+   ARTIZONE — design tokens
    ============================================================ */
 :root{
   --green:#1B4332;      /* brand, headers, artisan mode */
@@ -856,7 +856,7 @@ function useVoice(onResult) {
 /* ============================================================
    3. STORE  (cart, wishlist, orders, listings — persisted)
    ============================================================ */
-const KEY = 'kalasetu.v1';
+const KEY = 'artizone.v1';
 const load = () => { try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
 const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} };
 
@@ -1960,7 +1960,7 @@ function PDP({ go, nav }) {
                   </button>))}
               </div>
               <p className="muted" style={{ fontSize:12.5, marginTop:8 }}>
-                {p.aiEnhanced ? 'Retouched using KalaSetu\u2019s AI Studio Photography Pipeline. Original artisan capture is safely preserved.'
+                {p.aiEnhanced ? 'Retouched using ARTIZONE\u2019s AI Studio Photography Pipeline. Original artisan capture is safely preserved.'
                   : 'Authentic handmade product listing with verified artisan craft attribution.'}
               </p>
             </>
