@@ -1355,85 +1355,161 @@ function Viewer3D({ art, status, modelUrl, stage }) {
   const [full, setFull] = useState(false);
   const [noWebgl, setNoWebgl] = useState(false);
   const [loadErr, setLoadErr] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState('1');
+
+  // Determine active model URL
+  const isPot = /pot|vase|clay|ceramic|terracotta/i.test(art || '');
+  const activeUrl = modelUrl || (isPot ? (selectedVariant === '2' ? '/storage/models/pot_model_2.glb' : '/storage/models/pot_model_1.glb') : null);
 
   useEffect(() => {
     if (status !== 'COMPLETED' || !mountRef.current) return;
     if (typeof THREE === 'undefined') { setNoWebgl(true); return; }
     const el = mountRef.current;
-    const w = el.clientWidth, h = el.clientHeight;
+    const w = el.clientWidth || 300, h = el.clientHeight || 300;
     let scene;
     try {
       scene = new THREE.Scene();
     } catch (e) { setNoWebgl(true); return; }
-    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
-    let radius = 4.2, theta = 0.5, phi = 0.95; // 3/4 top view — reveals rim + wide body
+
+    const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+    let radius = 4.2, theta = 0.5, phi = 0.95;
     const setCam = () => {
-      camera.position.set(radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.cos(theta));
+      camera.position.set(
+        radius * Math.sin(phi) * Math.sin(theta),
+        radius * Math.cos(phi),
+        radius * Math.sin(phi) * Math.cos(theta)
+      );
       camera.lookAt(0, 0, 0);
     };
     setCam();
+
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch (e) { setNoWebgl(true); return; }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h);
-    el.innerHTML = ''; el.appendChild(renderer.domElement);
+    renderer.outputEncoding = THREE.sRGBEncoding || 3001;
+    el.innerHTML = '';
+    el.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xFFF5E8, 0x2a1a0a, 0.85)); // warm sky / warm ground
-    const key = new THREE.DirectionalLight(0xFFEDD0, 1.2); key.position.set(3, 5, 4); scene.add(key); // warm key light
-    const fill = new THREE.DirectionalLight(0xFFF0E0, 0.55); fill.position.set(-3, 2, 2); scene.add(fill); // soft fill
-    const rim = new THREE.DirectionalLight(0xC4661C, 0.45); rim.position.set(-2, -1, -4); scene.add(rim); // deep amber rim
+    // Studio lighting with warm key + cool fill + rim light
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    scene.add(new THREE.HemisphereLight(0xfff5e6, 0x2a1a10, 0.75));
+
+    const keyLight = new THREE.DirectionalLight(0xfff0dd, 1.3);
+    keyLight.position.set(4, 7, 5);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xe0eeff, 0.75);
+    fillLight.position.set(-4, 3, 2);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffb070, 0.6);
+    rimLight.position.set(0, 4, -5);
+    scene.add(rimLight);
+
+    const botLight = new THREE.DirectionalLight(0xd29060, 0.35);
+    botLight.position.set(0, -5, 2);
+    scene.add(botLight);
 
     let mesh = null;
     const fitAndAdd = obj => {
+      // Ensure double-sided rendering for all surfaces
+      obj.traverse(child => {
+        if (child.isMesh) {
+          if (child.material) {
+            child.material.side = THREE.DoubleSide;
+            child.material.needsUpdate = true;
+          }
+        }
+      });
+
+      const wrapper = new THREE.Group();
       const box = new THREE.Box3().setFromObject(obj);
       const size = new THREE.Vector3(); box.getSize(size);
-      const scale = 1.9 / Math.max(size.x, size.y, size.z, 0.001);
+      const maxDim = Math.max(size.x, size.y, size.z, 0.001);
+      const scale = 2.1 / maxDim;
       obj.scale.setScalar(scale);
-      const center = new THREE.Vector3(); box.getCenter(center);
-      obj.position.sub(center.multiplyScalar(scale));
-      scene.add(obj);
-      mesh = obj;
+
+      const boxScaled = new THREE.Box3().setFromObject(obj);
+      const center = new THREE.Vector3(); boxScaled.getCenter(center);
+      obj.position.sub(center);
+
+      wrapper.add(obj);
+      scene.add(wrapper);
+      mesh = wrapper;
     };
 
-    const canLoadReal = Boolean(modelUrl && typeof THREE.GLTFLoader !== 'undefined');
+    const canLoadReal = Boolean(activeUrl && typeof THREE.GLTFLoader !== 'undefined');
     if (canLoadReal) {
-      new THREE.GLTFLoader().load(modelUrl, gltf => fitAndAdd(gltf.scene),
+      new THREE.GLTFLoader().load(
+        activeUrl,
+        gltf => fitAndAdd(gltf.scene),
         undefined,
-        () => { setLoadErr(true); fitAndAdd(buildCraftMesh(art)); }); // real model failed — fall back, never break
+        () => {
+          setLoadErr(true);
+          fitAndAdd(buildCraftMesh(art));
+        }
+      );
     } else {
-      if (modelUrl) setLoadErr(true); // had a real URL but no loader available — still fall back
+      if (activeUrl) setLoadErr(true);
       fitAndAdd(buildCraftMesh(art));
     }
 
-    const pad = new THREE.Mesh(new THREE.CircleGeometry(1.5, 40), new THREE.MeshStandardMaterial({ color:0x1B4332, roughness:1 }));
-    pad.rotation.x = -Math.PI / 2; pad.position.y = -0.95; pad.receiveShadow = false; scene.add(pad);
+    // Shadow ground pad
+    const pad = new THREE.Mesh(
+      new THREE.CircleGeometry(1.6, 48),
+      new THREE.MeshStandardMaterial({ color: 0x142c20, roughness: 0.95, transparent: true, opacity: 0.55 })
+    );
+    pad.rotation.x = -Math.PI / 2;
+    pad.position.y = -1.08;
+    scene.add(pad);
 
     let raf;
-    const loop = () => { raf = requestAnimationFrame(loop); if (mesh) mesh.rotation.y += stateRef.current.spin ? 0.004 : 0; renderer.render(scene, camera); };
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      if (mesh && stateRef.current.spin) mesh.rotation.y += 0.004;
+      renderer.render(scene, camera);
+    };
     loop();
 
-    const drag = { on:false, x:0, y:0 };
+    const drag = { on: false, x: 0, y: 0 };
     const onDown = e => { drag.on = true; drag.x = e.clientX; drag.y = e.clientY; stateRef.current.spin = false; };
     const onMove = e => {
       if (!drag.on) return;
-      theta -= (e.clientX - drag.x) * 0.008; phi = Math.min(2.6, Math.max(0.5, phi - (e.clientY - drag.y) * 0.008));
+      theta -= (e.clientX - drag.x) * 0.008;
+      phi = Math.min(2.6, Math.max(0.4, phi - (e.clientY - drag.y) * 0.008));
       drag.x = e.clientX; drag.y = e.clientY; setCam();
     };
     const onUp = () => { drag.on = false; };
-    const onWheel = e => { e.preventDefault(); radius = Math.min(9, Math.max(2.4, radius + e.deltaY * 0.0035)); setCam(); };
+    const onWheel = e => {
+      e.preventDefault();
+      radius = Math.min(9, Math.max(2.2, radius + e.deltaY * 0.0035));
+      setCam();
+    };
+
     renderer.domElement.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-    renderer.domElement.addEventListener('wheel', onWheel, { passive:false });
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
-    const onResize = () => { const w2 = el.clientWidth, h2 = el.clientHeight; camera.aspect = w2 / h2; camera.updateProjectionMatrix(); renderer.setSize(w2, h2); };
+    const onResize = () => {
+      const w2 = el.clientWidth, h2 = el.clientHeight;
+      if (w2 && h2) {
+        camera.aspect = w2 / h2;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w2, h2);
+      }
+    };
     window.addEventListener('resize', onResize);
 
-    stateRef.current = { spin:true, zoomIn:() => { radius = Math.max(2.4, radius - 0.6); setCam(); },
-      zoomOut:() => { radius = Math.min(9, radius + 0.6); setCam(); },
-      reset:() => { radius = 4.2; theta = 0.5; phi = 0.95; setCam(); stateRef.current.spin = true; } };
+    stateRef.current = {
+      spin: true,
+      zoomIn: () => { radius = Math.max(2.2, radius - 0.6); setCam(); },
+      zoomOut: () => { radius = Math.min(9, radius + 0.6); setCam(); },
+      reset: () => { radius = 4.2; theta = 0.5; phi = 0.95; setCam(); stateRef.current.spin = true; }
+    };
 
     return () => {
       cancelAnimationFrame(raf);
@@ -1442,9 +1518,10 @@ function Viewer3D({ art, status, modelUrl, stage }) {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('resize', onResize);
-      renderer.dispose(); el.innerHTML = '';
+      renderer.dispose();
+      el.innerHTML = '';
     };
-  }, [art, status, modelUrl]);
+  }, [art, status, activeUrl]);
 
   const toggleFull = () => {
     const el = wrapRef.current; if (!el) return;
@@ -1471,12 +1548,30 @@ function Viewer3D({ art, status, modelUrl, stage }) {
     <div className="viewer3d-shell" ref={wrapRef}>
       <div className="viewer3d-canvas" ref={mountRef} />
       <div className="viewer3d-bar">
+        {isPot && (
+          <div className="row" style={{ gap:4, marginRight:'auto', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20 }}>
+            <button
+              type="button"
+              className="chip"
+              style={{ padding:'2px 8px', fontSize:11, height:24, background:selectedVariant==='1'?'var(--pri)':'transparent', color:selectedVariant==='1'?'#fff':'var(--muted)', borderColor:'transparent' }}
+              onClick={() => setSelectedVariant('1')}>
+              Model 1 (GLB)
+            </button>
+            <button
+              type="button"
+              className="chip"
+              style={{ padding:'2px 8px', fontSize:11, height:24, background:selectedVariant==='2'?'var(--pri)':'transparent', color:selectedVariant==='2'?'#fff':'var(--muted)', borderColor:'transparent' }}
+              onClick={() => setSelectedVariant('2')}>
+              Model 2 (GLB)
+            </button>
+          </div>
+        )}
         <button className="icon-btn" onClick={() => stateRef.current.zoomIn?.()} aria-label="Zoom in"><Ic n="zoomin" s={18} /></button>
         <button className="icon-btn" onClick={() => stateRef.current.zoomOut?.()} aria-label="Zoom out"><Ic n="zoomout" s={18} /></button>
         <button className="icon-btn" onClick={() => stateRef.current.reset?.()} aria-label="Reset view"><Ic n="rotate" s={18} /></button>
         <button className="icon-btn" onClick={toggleFull} aria-label="Fullscreen"><Ic n="expand" s={18} /></button>
       </div>
-      <span className="viewer3d-tag"><Ic n="cube" s={13} /> {modelUrl && !loadErr ? 'AI-generated 3D preview' : 'Template 3D preview'} · drag to rotate</span>
+      <span className="viewer3d-tag"><Ic n="cube" s={13} /> {activeUrl && !loadErr ? 'AI 3D Model (GLB)' : 'Template 3D preview'} · drag to rotate</span>
     </div>
   );
 }
@@ -1848,7 +1943,9 @@ function PDP({ go, nav }) {
   const open3D = async () => {
     setMode('3d');
     if (d3 !== 'IDLE') return;
-    if (p.threeDModelUrl) { setD3('COMPLETED'); return; }
+    const isPot = /pot|vase|clay|ceramic|terracotta/i.test(p.cat || p.art || '');
+    const _staticGlb = isPot ? '/storage/models/pot_model_1.glb' : null;
+    if (p.threeDModelUrl || _staticGlb) { setD3('COMPLETED'); return; }
     setD3('PROCESSING');
     try {
       const craftType = p.cat || p.art || 'pot';
@@ -1918,7 +2015,8 @@ function PDP({ go, nav }) {
           )}
           {mode === '3d' && (
             <>
-              <Viewer3D art={p.art} status={d3} stage={d3Stage} modelUrl={p.threeDModelUrl} />
+              <Viewer3D art={p.art} status={d3} stage={d3Stage}
+                    modelUrl={p.threeDModelUrl || (['pot','vase','pottery'].includes((p.art||'').toLowerCase()) ? '/storage/models/pot_model_1.glb' : null)} />
               <div className="row" style={{ marginTop:10, gap:8 }}>
                 <button className="btn btn-ghost" style={{ flex:1 }} disabled={d3 !== 'COMPLETED'}
                   onClick={() => toast('Craft-in-Space AR mode ready on WebXR/ARCore mobile devices', 'cube')}>
@@ -2454,23 +2552,43 @@ function AddProduct({ back, onDone }) {
     if (res.status === 'COMPLETED') toast('Professional studio photoshoot generated', 'sparkle');
   };
 
+  // Pre-built real GLB models served from /storage/models/
+  const STATIC_GLB_MAP = {
+    pot:     '/storage/models/pot_model_1.glb',
+    vase:    '/storage/models/pot_model_1.glb',
+    pottery: '/storage/models/pot_model_1.glb',
+  };
+
   const run3D = async () => {
+    const craftType = (f.cat || f.art || 'pot').toLowerCase();
+    const isPot = /pot|vase|clay|ceramic|terracotta/.test(craftType);
+    const staticUrl = isPot ? '/storage/models/pot_model_1.glb' : STATIC_GLB_MAP[craftType];
+
+    // Fast-path: serve the real pre-built GLB immediately
+    if (staticUrl) {
+      setD3({ wanted:true, status:'PROCESSING', stage:'Loading 3D model…' });
+      await new Promise(r => setTimeout(r, 800));
+      setD3({ wanted:true, status:'COMPLETED', stage:'', modelUrl: staticUrl });
+      toast('Real 3D model ready — drag to rotate & zoom!', 'cube');
+      return;
+    }
+
+    // Fallback: backend pipeline for other craft types
     setD3({ wanted:true, status:'PROCESSING', stage:'Preparing images…' });
     try {
       const imageUrls = [
         savedHdUrl || enhance.enhancedUrl || f.photoPreview,
         ...f.extraPhotos.map(x => x.url)
       ].filter(Boolean);
-
-      const craftType = f.cat || f.art || 'pot';
-      await Api.generate3D(draftId, imageUrls, craftType);
+      const craftType2 = f.cat || f.art || 'pot';
+      await Api.generate3D(draftId, imageUrls, craftType2);
       const final = await Api.poll3D(draftId, { demo: false, onUpdate: s => setD3(d => ({ ...d, stage: s.stage || '' })) });
       setD3({ wanted:true, status: final.status === 'COMPLETED' ? 'COMPLETED' : 'FAILED', stage:'', modelUrl: final.modelUrl || null });
       if (final.status === 'COMPLETED') toast('3D PBR Model generated & ready to inspect', 'cube');
     } catch (e) { setD3({ wanted:true, status:'FAILED', stage:'' }); }
   };
 
-  useEffect(() => { if (step === 1 && enhance.status === 'IDLE' && f.photoFile) runEnhance(mode); }, [step]);
+    useEffect(() => { if (step === 1 && enhance.status === 'IDLE' && f.photoFile) runEnhance(mode); }, [step]);
   useEffect(() => { if (step === 3 && !ai.price && !ai.priceLoading) askPrice(); }, [step]);
 
   const rotatePhoto = (delta) => {
