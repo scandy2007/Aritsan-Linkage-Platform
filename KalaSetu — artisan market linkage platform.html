@@ -1189,163 +1189,162 @@ function buildCraftMesh(kind) {
     const geo = new THREE.LatheGeometry(vPts, 56);
     group.add(new THREE.Mesh(geo, mat(1, 0.45)));
   } else if (kind === 'pot') {
-    // ─── TERRACOTTA MATKA — full realistic pot with hollow interior + carved geometric patterns ───
-    // Materials
-    const clayColor = 0xC4956A;         // warm terracotta
-    const clayDark  = 0xA0704A;         // inside darker clay
-    const patternCol= 0x1E0E04;         // near-black carved motif lines (like the reference)
-    const rimCol    = 0xD4A878;         // slightly lighter flared rim
+    // ═══ HOPI-STYLE TERRACOTTA POT — matched to reference images ═══
+    // Wide disc body, narrow neck, LARGE prominent torus rim, deep hollow, large scroll patterns
 
-    const clayMat  = new THREE.MeshStandardMaterial({ color:clayColor, roughness:0.72, metalness:0.02 });
-    const innerMat = new THREE.MeshStandardMaterial({ color:clayDark,  roughness:0.82, metalness:0.01, side:THREE.BackSide });
-    const patMat   = new THREE.MeshStandardMaterial({ color:patternCol,roughness:0.88, metalness:0.0  });
-    const rimMat   = new THREE.MeshStandardMaterial({ color:rimCol,    roughness:0.65, metalness:0.03 });
+    const clay    = new THREE.MeshStandardMaterial({ color:0xD4A87A, roughness:0.68, metalness:0.02 });
+    const bodyMat = new THREE.MeshStandardMaterial({ color:0xBE956A, roughness:0.75, metalness:0.02 });
+    const innerMat= new THREE.MeshStandardMaterial({ color:0xC49A6E, roughness:0.80, metalness:0.01, side:THREE.BackSide });
+    const darkMat = new THREE.MeshStandardMaterial({ color:0x2A1506, roughness:0.90, metalness:0.0  });
+    const bandMat = new THREE.MeshStandardMaterial({ color:0x3A1F08, roughness:0.88, metalness:0.0  });
 
-    // ── OUTER SHELL (82 lathe segments = very smooth) ──
+    // 1. OUTER SHELL — wide disc body, narrow neck, flares to rim base
     const outerPts = [
-      new THREE.Vector2(0.07, -0.88),
-      new THREE.Vector2(0.30, -0.87),
-      new THREE.Vector2(0.52, -0.84),
-      new THREE.Vector2(0.68, -0.76),
-      new THREE.Vector2(0.82, -0.62),
-      new THREE.Vector2(0.93, -0.42),
-      new THREE.Vector2(1.00, -0.18),
-      new THREE.Vector2(1.02, 0.00),
-      new THREE.Vector2(0.99, 0.14),
-      new THREE.Vector2(0.90, 0.28),
-      new THREE.Vector2(0.78, 0.38),
-      new THREE.Vector2(0.62, 0.46),
-      new THREE.Vector2(0.50, 0.50),   // throat
-      new THREE.Vector2(0.56, 0.57),
-      new THREE.Vector2(0.68, 0.63),
-      new THREE.Vector2(0.82, 0.70),
-      new THREE.Vector2(0.92, 0.76),   // rim shelf
-      new THREE.Vector2(0.95, 0.80),
-      new THREE.Vector2(0.93, 0.84),
-      new THREE.Vector2(0.86, 0.87),
-      new THREE.Vector2(0.54, 0.88),   // inner rim surface
-      new THREE.Vector2(0.06, 0.88),   // opening center
+      new THREE.Vector2(0.05, -0.90),
+      new THREE.Vector2(0.35, -0.89),
+      new THREE.Vector2(0.70, -0.86),
+      new THREE.Vector2(1.02, -0.78),
+      new THREE.Vector2(1.18, -0.58),
+      new THREE.Vector2(1.22, -0.35),
+      new THREE.Vector2(1.20, -0.10),
+      new THREE.Vector2(1.10, 0.12),
+      new THREE.Vector2(0.92, 0.28),
+      new THREE.Vector2(0.72, 0.40),
+      new THREE.Vector2(0.52, 0.52),
+      new THREE.Vector2(0.40, 0.60),
+      new THREE.Vector2(0.42, 0.65),
+      new THREE.Vector2(0.60, 0.69),
+      new THREE.Vector2(0.80, 0.71),
+      new THREE.Vector2(0.06, 0.71),
     ];
-    group.add(new THREE.Mesh(new THREE.LatheGeometry(outerPts, 80), clayMat));
+    group.add(new THREE.Mesh(new THREE.LatheGeometry(outerPts, 96), bodyMat));
 
-    // ── INNER SHELL (visible when looking from above into the pot) ──
+    // 2. RIM — large torus-profile lathe (the prominent donut rim from reference)
+    const RIM_R = 0.78;
+    const rimProfilePts = [
+      new THREE.Vector2(RIM_R - 0.38, 0.71),
+      new THREE.Vector2(RIM_R - 0.20, 0.69),
+      new THREE.Vector2(RIM_R - 0.04, 0.68),
+      new THREE.Vector2(RIM_R + 0.12, 0.72),
+      new THREE.Vector2(RIM_R + 0.28, 0.82),
+      new THREE.Vector2(RIM_R + 0.38, 0.96),
+      new THREE.Vector2(RIM_R + 0.40, 1.10),
+      new THREE.Vector2(RIM_R + 0.30, 1.22),
+      new THREE.Vector2(RIM_R + 0.10, 1.28),
+      new THREE.Vector2(RIM_R - 0.10, 1.24),
+      new THREE.Vector2(RIM_R - 0.28, 1.14),
+      new THREE.Vector2(RIM_R - 0.40, 1.00),
+      new THREE.Vector2(RIM_R - 0.44, 0.86),
+      new THREE.Vector2(RIM_R - 0.40, 0.75),
+      new THREE.Vector2(RIM_R - 0.38, 0.71),
+    ];
+    group.add(new THREE.Mesh(new THREE.LatheGeometry(rimProfilePts, 96), clay));
+
+    // 3. INNER BOWL — deep hollow visible from top
     const innerPts = [
-      new THREE.Vector2(0.05, 0.87),
-      new THREE.Vector2(0.50, 0.87),
-      new THREE.Vector2(0.58, 0.83),
-      new THREE.Vector2(0.50, 0.74),   // inner neck flare underside
-      new THREE.Vector2(0.42, 0.62),
-      new THREE.Vector2(0.36, 0.52),
-      new THREE.Vector2(0.42, 0.40),
-      new THREE.Vector2(0.60, 0.28),
-      new THREE.Vector2(0.78, 0.10),
-      new THREE.Vector2(0.88, -0.10),
-      new THREE.Vector2(0.86, -0.36),
-      new THREE.Vector2(0.75, -0.58),
-      new THREE.Vector2(0.52, -0.76),
-      new THREE.Vector2(0.28, -0.84),
-      new THREE.Vector2(0.06, -0.86),
+      new THREE.Vector2(0.04, 1.24),
+      new THREE.Vector2(0.28, 1.18),
+      new THREE.Vector2(0.44, 1.06),
+      new THREE.Vector2(0.46, 0.92),
+      new THREE.Vector2(0.40, 0.78),
+      new THREE.Vector2(0.32, 0.62),
+      new THREE.Vector2(0.28, 0.48),
+      new THREE.Vector2(0.34, 0.30),
+      new THREE.Vector2(0.52, 0.12),
+      new THREE.Vector2(0.74, -0.06),
+      new THREE.Vector2(0.94, -0.26),
+      new THREE.Vector2(1.06, -0.50),
+      new THREE.Vector2(1.08, -0.68),
+      new THREE.Vector2(0.96, -0.80),
+      new THREE.Vector2(0.66, -0.87),
+      new THREE.Vector2(0.34, -0.89),
+      new THREE.Vector2(0.05, -0.90),
     ];
-    group.add(new THREE.Mesh(new THREE.LatheGeometry(innerPts, 72), innerMat));
+    group.add(new THREE.Mesh(new THREE.LatheGeometry(innerPts, 80), innerMat));
 
-    // ── FLAT BOTTOM CAP ──
-    const botGeo = new THREE.CircleGeometry(0.07, 32);
-    const bot    = new THREE.Mesh(botGeo, new THREE.MeshStandardMaterial({ color:0x8B5A3A, roughness:0.95 }));
-    bot.rotation.x = -Math.PI / 2; bot.position.y = -0.875; group.add(bot);
-
-    // ── RIM TORUS (rounded lip, slightly lighter color) ──
-    const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.90, 0.032, 14, 80), rimMat);
-    rimTorus.position.y = 0.78; group.add(rimTorus);
-
-    // ── CARVED BANDS (four raised dark rings at key body positions) ──
-    const bands = [
-      { r:0.500, y:0.500, t:0.022 },  // throat band
-      { r:0.740, y:0.380, t:0.020 },  // upper-neck band
-      { r:1.005, y:-0.005, t:0.024 }, // shoulder / max-width band
-      { r:0.940, y:-0.430, t:0.020 }, // lower-body band
-      { r:0.680, y:-0.760, t:0.018 }, // near-base band
-    ];
-    bands.forEach(({ r, y, t }) => {
-      const b = new THREE.Mesh(new THREE.TorusGeometry(r, t, 10, 80), patMat);
-      b.position.y = y; group.add(b);
+    // 4. WIDE DARK PATTERN BAND — belly zone
+    const B = { r:1.215, t:0.034, segs:96 };
+    [-0.32, -0.10].forEach(y => {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(B.r, B.t, 10, B.segs), bandMat);
+      ring.position.y = y; group.add(ring);
     });
 
-    // ── GEOMETRIC TRIANGLE CHEVRONS around the wide body ──
-    // (mimics the angular tribal pattern on the reference pot)
-    const N = 14;
-    for (let i = 0; i < N; i++) {
-      const ang = (i / N) * Math.PI * 2;
-      const sin = Math.sin(ang), cos = Math.cos(ang);
+    // 5. LARGE SCROLL WAVE MOTIFS at shoulder
+    const SCROLLS = 8;
+    for (let i = 0; i < SCROLLS; i++) {
+      const a = (i / SCROLLS) * Math.PI * 2;
+      const aH = a + Math.PI / SCROLLS;
+      const R = 1.05;
+      const sn = Math.sin(a), cs = Math.cos(a);
 
-      // UP-pointing solid triangle (cone)
-      const upR = 0.97;
-      const up = new THREE.Mesh(
-        new THREE.ConeGeometry(0.055, 0.16, 4, 1),
-        patMat
-      );
-      up.position.set(sin * upR, -0.25, cos * upR);
-      up.rotation.y = -ang + Math.PI / 4; // rotate cone square-face forward
-      group.add(up);
+      // Primary outer arc
+      const arc1 = new THREE.Mesh(new THREE.TorusGeometry(0.095, 0.022, 8, 24, Math.PI * 1.6), darkMat);
+      arc1.position.set(sn * R, 0.18, cs * R);
+      arc1.rotation.y = -a; arc1.rotation.x = 0.2; group.add(arc1);
 
-      // DOWN-pointing inverted triangle between each up
-      const downAng = ang + (Math.PI / N);
-      const ds = Math.sin(downAng), dc = Math.cos(downAng);
-      const downR = 0.92;
-      const down = new THREE.Mesh(
-        new THREE.ConeGeometry(0.045, 0.13, 4, 1),
-        patMat
-      );
-      down.position.set(ds * downR, -0.50, dc * downR);
-      down.rotation.y  = -downAng + Math.PI / 4;
-      down.rotation.z  = Math.PI; // flip to point downward
-      group.add(down);
+      // Inner curl
+      const arc2 = new THREE.Mesh(new THREE.TorusGeometry(0.048, 0.018, 8, 18, Math.PI * 1.2), darkMat);
+      arc2.position.set(sn * (R - 0.06), 0.28, cs * (R - 0.06));
+      arc2.rotation.y = -a + 0.5; arc2.rotation.x = 0.1; group.add(arc2);
+
+      // Wave tail
+      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.010, 0.18, 6), darkMat);
+      tail.position.set(sn * (R + 0.02), 0.10, cs * (R + 0.02));
+      tail.rotation.z = -0.5; tail.rotation.y = -a; group.add(tail);
+
+      // Between-scroll mirror arc
+      const arc3 = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.018, 8, 20, Math.PI * 1.3), darkMat);
+      arc3.position.set(Math.sin(aH) * R * 0.97, 0.14, Math.cos(aH) * R * 0.97);
+      arc3.rotation.y = -aH - 0.4; arc3.rotation.x = -0.15; group.add(arc3);
     }
 
-    // ── SCROLL / WAVE ARC MOTIFS at shoulder band ──
-    // (mimics the curling-wave scroll lines on the reference pot)
-    const NS = 10;
-    for (let i = 0; i < NS; i++) {
-      const ang = (i / NS) * Math.PI * 2;
-      const sin = Math.sin(ang), cos = Math.cos(ang);
-      const scrollR = 0.98;
+    // 6. GEOMETRIC PANELS in the dark belly band
+    const RECTS = 12;
+    for (let i = 0; i < RECTS; i++) {
+      const a = (i / RECTS) * Math.PI * 2;
+      const sn = Math.sin(a), cs = Math.cos(a);
+      const R = 1.215;
 
-      // Inner arc stroke
-      const arc = new THREE.Mesh(
-        new THREE.TorusGeometry(0.052, 0.014, 6, 18, Math.PI * 1.35),
-        patMat
-      );
-      arc.position.set(sin * scrollR, 0.09, cos * scrollR);
-      arc.rotation.y = -ang;
-      group.add(arc);
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.18, 0.03), darkMat);
+      panel.position.set(sn * R, -0.21, cs * R); panel.rotation.y = -a; group.add(panel);
 
-      // Small dot accent next to each scroll
-      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), patMat);
-      dot.position.set(sin * (scrollR - 0.02), 0.18, cos * (scrollR - 0.02));
-      group.add(dot);
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.025, 0.032), darkMat);
+      stripe.position.set(sn * R, -0.24, cs * R);
+      stripe.rotation.y = -a; stripe.rotation.z = Math.PI * 0.22; group.add(stripe);
+
+      if (i % 2 === 0) {
+        const da = a + Math.PI / RECTS;
+        const div = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.22, 0.034), clay);
+        div.position.set(Math.sin(da) * R, -0.21, Math.cos(da) * R);
+        div.rotation.y = -da; group.add(div);
+      }
     }
 
-    // ── INNER RIM CARVED GROOVE (visible when looking in from top) ──
-    const innerRimGroove = new THREE.Mesh(
-      new THREE.TorusGeometry(0.50, 0.016, 8, 64),
-      patMat
-    );
-    innerRimGroove.position.y = 0.80; group.add(innerRimGroove);
+    // 7. LOWER BODY — large carved teardrop/leaf shapes
+    const LEAVES = 10;
+    for (let i = 0; i < LEAVES; i++) {
+      const a = (i / LEAVES) * Math.PI * 2;
+      const sn = Math.sin(a), cs = Math.cos(a);
+      const R = 1.12;
 
-    // ── HATCHED LINES on lower body band ──
-    const NH = 18;
-    for (let i = 0; i < NH; i++) {
-      const ang = (i / NH) * Math.PI * 2;
-      const sin = Math.sin(ang), cos = Math.cos(ang);
-      const ht = 0.88;
-      const stroke = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.010, 0.010, 0.14, 5),
-        patMat
-      );
-      stroke.position.set(sin * ht, -0.72, cos * ht);
-      stroke.rotation.y = -ang;
-      stroke.rotation.z = Math.PI * 0.18; // slight diagonal
-      group.add(stroke);
+      const leaf = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.020, 8, 22, Math.PI * 1.8), darkMat);
+      leaf.position.set(sn * R, -0.56, cs * R);
+      leaf.rotation.y = -a; leaf.rotation.x = 0.15; group.add(leaf);
+
+      const inner = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.014, 6, 16, Math.PI * 1.4), darkMat);
+      inner.position.set(sn * (R - 0.04), -0.50, cs * (R - 0.04));
+      inner.rotation.y = -a; group.add(inner);
     }
+
+    // 8. BASE BANDS + CAP
+    const bb1 = new THREE.Mesh(new THREE.TorusGeometry(0.98, 0.026, 10, 80), darkMat);
+    bb1.position.y = -0.80; group.add(bb1);
+    const bb2 = new THREE.Mesh(new THREE.TorusGeometry(0.70, 0.022, 10, 80), darkMat);
+    bb2.position.y = -0.85; group.add(bb2);
+    const bot = new THREE.Mesh(new THREE.CircleGeometry(0.35, 48),
+      new THREE.MeshStandardMaterial({ color:0x8B5838, roughness:0.95 }));
+    bot.rotation.x = -Math.PI / 2; bot.position.y = -0.90; group.add(bot);
+
   } else if (kind === 'basket' || kind === 'coaster') {
     const geo = new THREE.CylinderGeometry(1, 0.85, kind === 'coaster' ? 0.18 : 0.9, 24, 1, true);
     const m = new THREE.Mesh(geo, mat(1, 0.9)); group.add(m);
