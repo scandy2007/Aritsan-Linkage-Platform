@@ -28,7 +28,7 @@ app.get('/health', (req, res) => {
 
 // Serve frontend application
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve('./KalaSetu — artisan market linkage platform.html'));
+  res.sendFile(path.resolve('./ARTIZONE — artisan market linkage platform.html'));
 });
 app.use(express.static(path.resolve('.')));
 
@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`KalaSetu backend listening on http://localhost:${PORT}`);
+  console.log(`ARTIZONE backend listening on http://localhost:${PORT}`);
   console.log(`  GET  /health                             — check API-key configuration`);
   console.log(`  POST /api/products/:id/enhance-image      — multipart 'image' + 'mode'`);
   console.log(`  GET  /api/products/:id/enhance-status`);

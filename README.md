@@ -1,7 +1,7 @@
-# KalaSetu backend — real AI photo enhancement, image-to-3D, and product descriptions
+# ARTIZONE backend — real AI photo enhancement, image-to-3D, and product descriptions
 
 This is a genuine, runnable Node/Express service for the three AI features
-that matter most for the KalaSetu prototype:
+that matter most for the ARTIZONE prototype:
 
 1. **Professional product-photo enhancement** — via Google's **Gemini 2.5
    Flash Image** ("nano banana"), which edits the photo (lighting,
@@ -29,7 +29,7 @@ Google and Meshy do change over time, most recently around the exact
 
 ## Why this exists
 
-The KalaSetu frontend (the claude.ai artifact) is a static page — it cannot
+The ARTIZONE frontend (the claude.ai artifact) is a static page — it cannot
 run a server, call arbitrary third-party AI APIs, or write to real cloud
 storage. This backend is the piece that actually can. Deploy it somewhere
 with a Node runtime, point the frontend at it, and the frontend's existing
@@ -114,7 +114,7 @@ infra choices:**
 - Locking `cors()` down to your actual frontend origin before this is
   public.
 
-## Wiring it to the KalaSetu frontend artifact
+## Wiring it to the ARTIZONE frontend artifact
 
 In the frontend's `Api` object, set:
 

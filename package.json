@@ -1,7 +1,7 @@
 {
-  "name": "kalasetu-backend",
+  "name": "artizone-backend",
   "version": "1.0.0",
-  "description": "Real backend for KalaSetu: AI product-photo enhancement (Gemini 2.5 Flash Image) and image-to-3D generation (Meshy), plus the status/storage endpoints the frontend expects.",
+  "description": "Real backend for ARTIZONE: AI product-photo enhancement (Gemini 2.5 Flash Image) and image-to-3D generation (Meshy), plus the status/storage endpoints the frontend expects.",
   "type": "module",
   "main": "server.js",
   "scripts": {
