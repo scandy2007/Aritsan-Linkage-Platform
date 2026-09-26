@@ -20,9 +20,17 @@ app.get('/health', (req, res) => {
   res.json({
     ok: true,
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
+    removeBgConfigured: Boolean(process.env.REMOVEBG_KEY || process.env.REMOVE_BG_API_KEY),
+    falConfigured: Boolean(process.env.FAL_KEY),
     meshyConfigured: Boolean(process.env.MESHY_API_KEY),
   });
 });
+
+// Serve frontend application
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve('./KalaSetu — artisan market linkage platform.html'));
+});
+app.use(express.static(path.resolve('.')));
 
 app.use((err, req, res, next) => {
   console.error(err);

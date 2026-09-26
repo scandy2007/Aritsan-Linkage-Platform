@@ -97,24 +97,24 @@ router.get('/:id/enhance-status', (req, res) => {
 
 router.post('/:id/generate-3d', async (req, res) => {
   const { id } = req.params;
-  const imageUrls = req.body.imageUrls;
-
-  if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
-    return res.status(400).json({ error: 'Body must include imageUrls: string[] — use the enhanced image URL from step 1, plus any extra angles the artisan supplied.' });
-  }
+  const imageUrls = Array.isArray(req.body.imageUrls) ? req.body.imageUrls : [];
+  const craftType = req.body.craftType || 'pot';
 
   setJob(id, '3d', { status: 'PENDING', stage: 'Preparing images…', multi: imageUrls.length > 1 });
 
   try {
-    const taskId = await createImageTo3DJob(imageUrls);
-    setJob(id, '3d', { status: 'IN_PROGRESS', stage: 'Understanding product…', taskId });
+    const { taskId, modelUrl } = await createImageTo3DJob(id, imageUrls, craftType);
+    setJob(id, '3d', {
+      status: 'IN_PROGRESS',
+      stage: 'Understanding product…',
+      taskId,
+      modelUrls: modelUrl ? { glb: modelUrl } : undefined,
+    });
     return res.status(202).json(getJob(id, '3d'));
   } catch (err) {
-    const message = err.code === 'NO_API_KEY'
-      ? '3D generation is not configured — set MESHY_API_KEY in .env.'
-      : (err.response?.data?.message || err.message || '3D job could not be created.');
+    const message = err.message || '3D job could not be created.';
     setJob(id, '3d', { status: 'FAILED', stage: null, error: message });
-    return res.status(err.code === 'NO_API_KEY' ? 501 : 200).json(getJob(id, '3d'));
+    return res.status(200).json(getJob(id, '3d'));
   }
 });
 
